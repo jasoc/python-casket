@@ -1,0 +1,4 @@
+CREATE TABLE accounts (
+ name VARCHAR NOT NULL,
+ pswd VARCHAR NOT NULL
+);

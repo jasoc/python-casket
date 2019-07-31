@@ -1,5 +1,4 @@
-
-from casket import Database, Security
+from casket import Security
 
 
 class Account:
@@ -13,17 +12,22 @@ class Account:
 
         self._db = Database()
 
+
     def __repr__(self):
         return self._name + ' account'
+
 
     def name(self):
         return self._name
 
+
     def changeName(self, new_name):
         self._name = new_name
 
+
     def changePassword(self, new_pswd):
         self._pswd = new_pswd
+
 
     def store(self):
 

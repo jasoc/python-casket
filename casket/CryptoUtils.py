@@ -1,6 +1,6 @@
 from passlib.context import CryptContext
 
-class Security:
+class CryptoUtils:
 
     pwd_context = CryptContext(
             schemes=["pbkdf2_sha256"],
@@ -11,6 +11,10 @@ class Security:
     @staticmethod
     def encryptPassword(password):
         return Security.pwd_context.hash(password)
+
+    @staticmethod
+    def decryptPassword(hashed):
+        return Security.pwd_context.decrypt(hashed)
 
     @staticmethod
     def checkPassword(password, hashed):

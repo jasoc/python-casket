@@ -1,6 +1,6 @@
 import sqlite3
 
-class Database:
+class SqlUtils:
 
     def __init__(self, path):
 
@@ -10,37 +10,8 @@ class Database:
     def __repr__(self):
         return 'sqlite db'
 
-    def rowsCount(self, table):
-        return len(self.query('SELECT * FROM ' + table))
-
-    def columnsCount(self, table):
-        return len(self.getColumnsNames(table))
-
-    def addRow(self, values, table):
-
-        try:
-            self.query('INSERT INTO %s (%s) VALUES (%s)' % (table, ', '.join(self.getColumnsNames(table)), ', '.join(values)))
-
-        except Exception as e:
-            raise Exception('Invalid parameters /n' + e)
-
-    def getColumnsNames(self, table):
-        """
-        return self.query("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA`='" +
-        table +
-        "' AND `TABLE_NAME`=\'" +
-        table +
-        "\';")
-        """
-
-        return ['name','pswd']
-
     def save():
         self._cursor.commit()
-
-
-    def getPswd(name):
-        return self.query("SELECT pswd FROM accounts WHERE name='%s'" % (name))
 
     def query(self, query, void=False):
 
