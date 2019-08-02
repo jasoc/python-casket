@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QTableWidget, QHeaderView
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUi
 
@@ -21,13 +21,16 @@ class IMain(QMainWindow):
 
         self.showMaximized()
 
-        if CASKET.USER_CONFIG()["first_start"] == "none":
+        if CASKET.FIRST_START():
 
             setup = IFirstSetup()
             setup.exec_()
 
     def initialize_component(self):
-        pass
+
+        self.TBL_schema.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.TBL_schema.horizontalHeader().setStretchLastSection(True)
+        self.TBL_schema.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
     def initialize_table(self):
 

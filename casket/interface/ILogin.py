@@ -9,25 +9,25 @@ from casket import CASKET, CryptoUtils
 from casket.database import DbUtils
 from casket.interface import IFirstSetup
 
-class IFirstSetup(QDialog):
+class ILogin(QDialog):
 
     def __init__(self):
 
         super().__init__()
-        loadUi('casket/ui/first_setup.ui', self)
+        loadUi('casket/ui/login.ui', self)
+
+        self.verified = False
         self.initialize_component()
 
     def initialize_component(self):
         self.BTN_confirm.clicked.connect(self.BTN_confirm_FUNCT)
-        self.TXT_key.setEchoMode(QLineEdit.Password)
+        self.TXT_pswd.setEchoMode(QLineEdit.Password)
 
     def BTN_confirm_FUNCT(self):
 
-        master_hash = CryptoUtils.encryptPassword(self.TXT_key.text())
+        if CryptoUtils.checkPassword(self.TXT_pswd.text(), CASKET.MASTER_HASH()):
+            self.verified = True
+            self.close()
 
-        with open(CASKET.MASTER_HASH_PATH, 'wb') as filehandler:
-            pickle.dump(master_hash, filehandler)
-
-        os.system('rm ' + CASKET.FIRST_START_VERIFIER_PATH)
-
-        self.close()
+        else:
+            self.BTN_confirm.setText('Retry')

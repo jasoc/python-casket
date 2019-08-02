@@ -1,10 +1,11 @@
 import os
 import sys
 import sqlite3
+import pickle
 from pathlib import Path
 import json
 
-from .Security import Security
+from .CryptoUtils import CryptoUtils
 
 from PyQt5.QtWidgets import QApplication, QSplashScreen
 from PyQt5.QtGui import QPixmap
@@ -32,10 +33,14 @@ class CASKET:
 
     MASTER_HASH_PATH = SUBFOLDERS[1] + 'CASKET'
 
+    def MASTER_HASH():
+        with open(CASKET.MASTER_HASH_PATH, 'rb') as filehandler:
+            return pickle.load(filehandler)
+
     FIRST_START_VERIFIER_PATH = SUBFOLDERS[1] + 'FIRSTSTART'
 
-    FIRST_START():
-        return os.path.isfile(FIRST_START_VERIFIER_PATH)
+    def FIRST_START():
+        return os.path.isfile(CASKET.FIRST_START_VERIFIER_PATH)
 
 def firstSetup():
 
@@ -51,8 +56,13 @@ def firstSetup():
     with open('/'.join([CASKET.HOME_PATH, 'config.json']), 'w') as outfile:
         json.dump(data, outfile)
 
-    with open(CASKET.FIRST_START_VERIFIER_PATH, 'w') as filehandler
-        pickle.dump('', filehandler)
+    with open(CASKET.FIRST_START_VERIFIER_PATH, 'w') as filehandler:
+
+        try:
+            pickle.dump('', filehandler)
+
+        except:
+            pass
 
     conn = sqlite3.connect(CASKET.DB_PATH)
     os.system('sqlite3 %s < casket/data/sql/structure.sql' % (CASKET.DB_PATH))
@@ -60,7 +70,7 @@ def firstSetup():
 
 def startGui():
 
-    from casket.interface import IMain
+    from casket.interface import IMain, ILogin
 
     app = QApplication(sys.argv)
 
@@ -70,11 +80,19 @@ def startGui():
     QTimer.singleShot(2000, lambda: splash.close())
 
     if not CASKET.FIRST_START():
-        pass
-        
-    ui = IMain()
 
-    sys.exit(app.exec_())
+        login = ILogin()
+        login.exec_()
+
+        if login.verified:
+
+            ui = IMain()
+            sys.exit(app.exec_())
+
+    else:
+
+        ui = IMain()
+        sys.exit(app.exec_())
 
 
 def startCli():

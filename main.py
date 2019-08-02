@@ -1,7 +1,7 @@
 import os
 import sys
 
-from casket import firstSetup, Account, Security, startGui, CASKET
+from casket import firstSetup, Account, CryptoUtils, startGui, CASKET
 from casket.interface import IMain
 
 
