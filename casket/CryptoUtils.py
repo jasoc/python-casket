@@ -9,13 +9,17 @@ class CryptoUtils:
     )
 
     @staticmethod
-    def encryptPassword(password):
+    def hash(password):
         return CryptoUtils.pwd_context.hash(password)
 
     @staticmethod
-    def decryptPassword(hashed):
+    def checkHash(password, hashed):
+        return CryptoUtils.pwd_context.verify(password, hashed)
+
+    @staticmethod
+    def encrypt(pswd, key):
         return CryptoUtils.pwd_context.decrypt(hashed)
 
     @staticmethod
-    def checkPassword(password, hashed):
-        return CryptoUtils.pwd_context.verify(password, hashed)
+    def decrypt(pswd, key):
+        return CryptoUtils.pwd_context.decrypt(hashed)

@@ -25,7 +25,7 @@ class ILogin(QDialog):
 
     def BTN_confirm_FUNCT(self):
 
-        if CryptoUtils.checkPassword(self.TXT_pswd.text(), CASKET.MASTER_HASH()):
+        if CryptoUtils.checkHash(self.TXT_pswd.text(), CASKET.MASTER_HASH()):
             self.verified = True
             self.close()
 

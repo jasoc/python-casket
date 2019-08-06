@@ -15,6 +15,7 @@ class IFirstSetup(QDialog):
 
         super().__init__()
         loadUi('casket/ui/first_setup.ui', self)
+
         self.initialize_component()
 
     def initialize_component(self):
@@ -23,7 +24,7 @@ class IFirstSetup(QDialog):
 
     def BTN_confirm_FUNCT(self):
 
-        master_hash = CryptoUtils.encryptPassword(self.TXT_key.text())
+        master_hash = CryptoUtils.hash(self.TXT_key.text())
 
         with open(CASKET.MASTER_HASH_PATH, 'wb') as filehandler:
             pickle.dump(master_hash, filehandler)
