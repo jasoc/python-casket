@@ -45,7 +45,7 @@ class CryptoUtils:
     @staticmethod
     def encryptPassword(master_pswd, plain_pswd):
         salt = os.urandom(16)
-        key = make_key(master_pswd.encode("utf-8"), salt)
+        key = makeKey(master_pswd.encode("utf-8"), salt)
         cipher_suite = Fernet(key)
         cipher_text = cipher_suite.encrypt(plain_pswd.encode("utf-8"))
         enc_pswd = base64.b64encode(salt).decode(
@@ -55,7 +55,7 @@ class CryptoUtils:
     @staticmethod
     def decryptPassword(master_pswd, enc_pswd):
         salt = base64.b64decode(enc_pswd[:24].encode("utf-8"))
-        key = make_key(master_pswd.encode("utf-8"), salt)
+        key = makeKey(master_pswd.encode("utf-8"), salt)
         cipher_suite = Fernet(key)
         plain_text = cipher_suite.decrypt(enc_pswd[24:].encode("utf-8"))
         plain_text_utf8 = plain_text.decode("utf-8")
