@@ -1,12 +1,12 @@
 import sqlite3
 from .SqlUtils import SqlUtils
-from casket import CASKET
+from Casket import Casket
 
 class DbUtils:
 
     def __init__(self):
 
-        self._db = SqlUtils(CASKET.DB_PATH)
+        self._db = SqlUtils(Casket.DB_PATH)
 
     def __repr__(self):
         return 'sqlite db'

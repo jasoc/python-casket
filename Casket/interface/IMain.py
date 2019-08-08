@@ -2,9 +2,9 @@ from PyQt5.QtWidgets import QMainWindow, QTableWidget, QHeaderView
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUi
 
-from casket import CASKET
-from casket.database import DbUtils
-from casket.interface.IFirstSetup import IFirstSetup
+from Casket import Casket
+from Casket.database import DbUtils
+from Casket.interface.IFirstSetup import IFirstSetup
 
 
 class IMain(QMainWindow):
@@ -12,7 +12,7 @@ class IMain(QMainWindow):
     def __init__(self):
 
         super().__init__()
-        loadUi('casket/ui/main.ui', self)
+        loadUi('Casket/ui/main.ui', self)
 
         self.db = DbUtils()
 
@@ -21,7 +21,7 @@ class IMain(QMainWindow):
 
         self.showMaximized()
 
-        if CASKET.FIRST_START():
+        if Casket.FIRST_START():
 
             setup = IFirstSetup()
             setup.exec_()

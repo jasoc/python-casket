@@ -5,16 +5,16 @@ from PyQt5.QtWidgets import QDialog, QLineEdit
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUi
 
-from casket import CASKET, CryptoUtils
-from casket.database import DbUtils
-from casket.interface import IFirstSetup
+from Casket import Casket, CryptoUtils
+from Casket.database import DbUtils
+from Casket.interface import IFirstSetup
 
 class ILogin(QDialog):
 
     def __init__(self):
 
         super().__init__()
-        loadUi('casket/ui/login.ui', self)
+        loadUi('Casket/ui/login.ui', self)
 
         self.verified = False
         self.initialize_component()
@@ -25,7 +25,7 @@ class ILogin(QDialog):
 
     def BTN_confirm_FUNCT(self):
 
-        if CryptoUtils.checkHash(self.TXT_pswd.text(), CASKET.MASTER_HASH()):
+        if CryptoUtils.checkHash(self.TXT_pswd.text(), Casket.MASTER_HASH()):
             self.verified = True
             self.close()
 

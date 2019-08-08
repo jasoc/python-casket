@@ -5,16 +5,16 @@ from PyQt5.QtWidgets import QDialog, QLineEdit
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUi
 
-from casket import CASKET, CryptoUtils
-from casket.database import DbUtils
-from casket.interface import IFirstSetup
+from Casket import Casket, CryptoUtils
+from Casket.database import DbUtils
+from Casket.interface import IFirstSetup
 
 class IFirstSetup(QDialog):
 
     def __init__(self):
 
         super().__init__()
-        loadUi('casket/ui/first_setup.ui', self)
+        loadUi('Casket/ui/first_setup.ui', self)
 
         self.initialize_component()
 
@@ -26,9 +26,9 @@ class IFirstSetup(QDialog):
 
         master_hash = CryptoUtils.hash(self.TXT_key.text())
 
-        with open(CASKET.MASTER_HASH_PATH, 'wb') as filehandler:
+        with open(Casket.MASTER_HASH_PATH, 'wb') as filehandler:
             pickle.dump(master_hash, filehandler)
 
-        os.system('rm ' + CASKET.FIRST_START_VERIFIER_PATH)
+        os.system('rm ' + Casket.FIRST_START_VERIFIER_PATH)
 
         self.close()

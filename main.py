@@ -1,57 +1,54 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+
+"""
+main.py
+
+Main script of Casket for parse argument and start the program.
+"""
+
+__authors__ = "Jasoc"
+__version__ = "0.1-beta1"
+__license__ = "GPL-3.0"
+
 
 import os
-import sys
+import argparse
 
-from casket import firstSetup, Account, CryptoUtils, startGui, CASKET
-from casket.interface import IMain
+from logzero import logger
 
-
-VERSION = '0.1-beta1'
-
-
-def PRINT_HELP():
-    sys.stderr.write("""
-Casket %s
-
-Usage: casket [OPTION] [ACCOUNT]
-
-OPTION include:
-
-    -cli       -C    Start casket in CLI mode
-    -help      -H    Show help
-    -version   -V    Display version
-
-ACCOUNT is the name of account you want to manage. \n
-""" % (VERSION))
+from Casket import Casket
 
 
 def main():
+    """ Main function Casket. """
 
-    if not os.path.isdir(CASKET.HOME_PATH):
-        firstSetup()
+    logger.info("Starting Casket")
 
-    if len(sys.argv) == 1:
-        startGui()
+    parser = argparse.ArgumentParser(description='Casket ' + __version__)
 
-    elif '-cli' in sys.argv or '-C' in sys.argv:
+    # Casket [-c] [--commandline]
+    parser.add_argument('-c', '--commandline', help='start Casket in CLI mode', action="store_true")
 
-        if len(sys.argv) == 4:
-            pass
+    # Casket [-v] [--version]
+    parser.add_argument('-v', '--version', help='display version', action="store_true")
 
-        else:
-            raise Exception('Missing arguments.')
+    args = parser.parse_args()
 
-    elif '-help' in sys.argv or '-H' in sys.argv:
+    if not os.path.isdir(Casket.HOME_PATH):     # Checking if this is first start of Casket
+        Casket.firstSetup()                     # if true show up first setup window.
 
-        PRINT_HELP()
-    elif '-version' in sys.argv or '-V' in sys.argv:
-        print('Casket ' + VERSION)
+    # Check arguments for properly start Casket
+    # or show some info
+
+    if args.commandline:
+        Casket.startCli()
+
+    elif args.version:
+        print('Casket ' + __version__)
 
     else:
-        print('Invalid arguments.')
-        PRINT_HELP()
+        logger.info("Starting Casket GUI mode")
+        Casket.startGui()     # If no argument is passed, start Casket in default GUI mode.
 
 
 if __name__ == '__main__':
