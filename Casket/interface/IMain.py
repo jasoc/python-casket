@@ -12,7 +12,7 @@ class IMain(QMainWindow):
     def __init__(self):
 
         super().__init__()
-        loadUi('Casket/ui/main.ui', self)
+        loadUi('Casket/resources/ui/main.ui', self)
 
         self.db = DbUtils()
 
@@ -21,7 +21,7 @@ class IMain(QMainWindow):
 
         self.showMaximized()
 
-        if Casket.FIRST_START():
+        if Casket.Utils.FIRST_START():
 
             setup = IFirstSetup()
             setup.exec_()

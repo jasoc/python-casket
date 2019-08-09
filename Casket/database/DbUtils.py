@@ -6,7 +6,7 @@ class DbUtils:
 
     def __init__(self):
 
-        self._db = SqlUtils(Casket.DB_PATH)
+        self._db = SqlUtils(Casket.Utils.DB_PATH)
 
     def __repr__(self):
         return 'sqlite db'

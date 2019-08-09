@@ -36,7 +36,7 @@ class Utils:
     MASTER_HASH_PATH = SUBFOLDERS[1] + 'Casket'
 
     def MASTER_HASH():
-        with open(Casket.MASTER_HASH_PATH, 'rb') as filehandler:
+        with open(Utils.MASTER_HASH_PATH, 'rb') as filehandler:
             return pickle.load(filehandler)
 
     FIRST_START_VERIFIER_PATH = SUBFOLDERS[1] + 'FIRSTSTART'
