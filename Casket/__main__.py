@@ -7,8 +7,8 @@ Main script of Casket for parse argument and start the program.
 """
 
 __authors__ = "Jasoc"
-__version__ = "0.1-beta1"
-__license__ = "GPL-3.0"
+__version__ = "0.1b1"
+__license__ = "GNU General Public License v3.0"
 
 
 import os
@@ -16,11 +16,13 @@ import argparse
 
 from logzero import logger
 
-from Casket import Casket
+import Casket
 
 
 def main():
     """ Main function Casket. """
+
+    os.chdir(os.path.dirname(os.path.abspath(__file__))[:-7])
 
     logger.info("Starting Casket")
 
@@ -34,21 +36,21 @@ def main():
 
     args = parser.parse_args()
 
-    if not os.path.isdir(Casket.HOME_PATH):     # Checking if this is first start of Casket
-        Casket.firstSetup()                     # if true show up first setup window.
+    if not os.path.isdir(Casket.Utils.HOME_PATH):     # Checking if this is first start of Casket
+        Casket.Utils.firstSetup()                     # if true show up first setup window.
 
     # Check arguments for properly start Casket
     # or show some info
 
     if args.commandline:
-        Casket.startCli()
+        Casket.Utils.startCli()
 
     elif args.version:
         print('Casket ' + __version__)
 
     else:
         logger.info("Starting Casket GUI mode")
-        Casket.startGui()     # If no argument is passed, start Casket in default GUI mode.
+        Casket.Utils.startGui()     # If no argument is passed, start Casket in default GUI mode.
 
 
 if __name__ == '__main__':

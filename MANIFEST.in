@@ -1,0 +1,3 @@
+recursive-include Casket/resources/images *.png
+recursive-include Casket/resources/ui *.ui
+include LICENSE

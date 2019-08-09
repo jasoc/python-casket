@@ -1,6 +1,6 @@
 import sqlite3
 from .SqlUtils import SqlUtils
-from Casket import Casket
+import Casket
 
 class DbUtils:
 

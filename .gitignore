@@ -1,2 +1,6 @@
 *.psd
 try.py
+
+__pycache__
+build
+Casket.egg-info

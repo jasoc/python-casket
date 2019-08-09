@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QMainWindow, QTableWidget, QHeaderView
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUi
 
-from Casket import Casket
+import Casket
 from Casket.database import DbUtils
 from Casket.interface.IFirstSetup import IFirstSetup
 

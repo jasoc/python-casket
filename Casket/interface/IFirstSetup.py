@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QDialog, QLineEdit
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUi
 
-from Casket import Casket, CryptoUtils
+import Casket, CryptoUtils
 from Casket.database import DbUtils
 from Casket.interface import IFirstSetup
 

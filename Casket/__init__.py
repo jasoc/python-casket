@@ -11,7 +11,9 @@ from PyQt5.QtWidgets import QApplication, QSplashScreen
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QTimer
 
-class Casket:
+class Utils:
+
+    from interface import IMain
 
     def USER_CONFIG():
         with open('/'.join([Casket.HOME_PATH, 'config.json']), 'r') as outfile:
@@ -40,7 +42,7 @@ class Casket:
     FIRST_START_VERIFIER_PATH = SUBFOLDERS[1] + 'FIRSTSTART'
 
     def FIRST_START():
-        return os.path.isfile(Casket.FIRST_START_VERIFIER_PATH)
+        return os.path.isfile(Utils.FIRST_START_VERIFIER_PATH)
 
     def firstSetup():
 
@@ -74,12 +76,12 @@ class Casket:
 
         app = QApplication(sys.argv)
 
-        splash = QSplashScreen(QPixmap('Casket/resources/banner.png'), Qt.WindowStaysOnTopHint)
+        splash = QSplashScreen(QPixmap('Casket/resources/images/banner.png'), Qt.WindowStaysOnTopHint)
         splash.show()
 
         QTimer.singleShot(2000, lambda: splash.close())
 
-        if not Casket.FIRST_START():
+        if not Utils.FIRST_START():
 
             login = ILogin()
             login.exec_()
