@@ -1,4 +1,4 @@
-# Casket ![Python Version](https://img.shields.io/badge/Python-3.7-blue.svg) ![Powered by QT](https://img.shields.io/badge/Powered%20By-Qt5-green.svg)
+# Casket ![Python Version](https://img.shields.io/badge/Python-3.7-blue.svg) ![Powered by QT](https://img.shields.io/badge/GUI-Qt5-green.svg)
 
 ## Introduction
 
