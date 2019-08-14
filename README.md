@@ -1,4 +1,4 @@
-# Casket
+# Casket ![Python Version](https://img.shields.io/badge/Python-3.7-blue.svg) ![Powered by QT](https://img.shields.io/badge/Powered%20By-Qt5-green.svg)
 
 ## Introduction
 
@@ -18,6 +18,10 @@ Clone the repository and run it with:
 -   logzero module
 -   Cryptography module
 -   Other modules that should already be installed (os, sys, sqlite3, pickle, json, base64, passlib)
+
+### Contributing
+
+See the [contributing file](CONTRIBUTING.md).
 
 ## License
 
