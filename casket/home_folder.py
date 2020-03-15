@@ -21,17 +21,9 @@ import casket
 class home_folder:
 
     HOME_PATH = str(Path.home()) + '/casket'
-    SUBDIRS = [
-    'db',
-    'private',
-    'sessions'
-    ]
+    SUBDIRS = ['db', 'private', 'sessions']
     DB_PATH = '%s/%s/casket.db' % (HOME_PATH, SUBDIRS[0])
-    SUBFOLDERS = [
-        HOME_PATH + '/' + SUBDIRS[0] + '/',
-        HOME_PATH + '/' + SUBDIRS[1] + '/',
-        HOME_PATH + '/' + SUBDIRS[2] + '/',
-    ]
+    SUBFOLDERS = [ "%s/%s/" %(str(Path.home()) + '/casket', _) for _ in SUBDIRS ]
 
     def master_hash_path(username):
         return home_folder.SUBFOLDERS[1] + username
