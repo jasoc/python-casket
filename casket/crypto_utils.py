@@ -14,24 +14,43 @@ class crypto_utils:
         pbkdf2_sha256__default_rounds=30000
         )
 
-
-    @staticmethod
-    def get_key_from_user_password(password, salt = "diocan"):
-        password = password.encode()
-        salt = salt.encode()
-        kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=100000,
-        backend=default_backend()
-        )
-        return base64.urlsafe_b64encode(kdf.derive(password))
+    algorithms = {
+        "sha256" : hashes.SHA256()
+    }
 
     @staticmethod
     def hash(password):
         return crypto_utils.pwd_context.hash(password)
 
     @staticmethod
-    def checkHash(password, hashed):
+    def check_hash(password, hashed):
         return crypto_utils.pwd_context.verify(password, hashed)
+
+    @staticmethod
+    def make_key(password, algorithm, salt):
+        kdf = PBKDF2HMAC(
+            algorithm=algorithms[algorithm],
+            length=32,
+            salt=salt,
+            iterations=100000,
+            backend=default_backend()
+        )
+        return base64.urlsafe_b64encode(kdf.derive(password))
+
+    @staticmethod
+    def encrypt_password(master_pswd, plain_pswd, salt = os.urandom(16), algorithm = "sha256"):
+        key = make_key(master_pswd.encode("utf-8"), algorithm, salt)
+        cipher_suite = Fernet(key)
+        cipher_text = cipher_suite.encrypt(plain_pswd.encode("utf-8"))
+        enc_pswd = base64.b64encode(salt).decode(
+            'utf-8') + cipher_text.decode('utf-8')
+        return enc_pswd
+
+    @staticmethod
+    def decrypt_password(master_pswd, enc_pswd, algorithm = "sha256"):
+        salt = base64.b64decode(enc_pswd[:24].encode("utf-8"))
+        key = make_key(master_pswd.encode("utf-8"), algorithm, salt)
+        cipher_suite = Fernet(key)
+        plain_text = cipher_suite.decrypt(enc_pswd[24:].encode("utf-8"))
+        plain_text_utf8 = plain_text.decode("utf-8")
+        return plain_text_utf8
