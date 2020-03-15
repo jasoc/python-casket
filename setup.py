@@ -5,12 +5,12 @@ with open("README.txt", 'r') as f:
 
 setup(
    name='casket',
-   version='0.1b1',
+   version='0.1.beta1',
    license='GNU General Public License v3.0',
    description='A simple password manager written in Python',
    author='Jasoc',
    author_email='paridegiunta@gmail.com',
-   packages=['Casket'],
+   packages=['casket'],
    install_requires=['PyQt5'],
    include_package_data=True
 )
