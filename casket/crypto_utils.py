@@ -1,3 +1,14 @@
+"""
+crypto_utils.py
+
+Class for encrypting, decrypting and hashing strings.
+"""
+
+__authors__ = "Jasoc"
+__version__ = "0.1.beta1"
+__license__ = "GNU General Public License v3.0"
+
+
 import os
 import base64
 from cryptography.fernet import Fernet
@@ -29,7 +40,7 @@ class crypto_utils:
     @staticmethod
     def make_key(password, algorithm, salt):
         kdf = PBKDF2HMAC(
-            algorithm=algorithms[algorithm],
+            algorithm=crypto_utils.algorithms[algorithm],
             length=32,
             salt=salt,
             iterations=100000,
@@ -39,7 +50,7 @@ class crypto_utils:
 
     @staticmethod
     def encrypt_password(master_pswd, plain_pswd, salt = os.urandom(16), algorithm = "sha256"):
-        key = make_key(master_pswd.encode("utf-8"), algorithm, salt)
+        key = crypto_utils.make_key(master_pswd.encode("utf-8"), algorithm, salt)
         cipher_suite = Fernet(key)
         cipher_text = cipher_suite.encrypt(plain_pswd.encode("utf-8"))
         enc_pswd = base64.b64encode(salt).decode(
@@ -49,7 +60,7 @@ class crypto_utils:
     @staticmethod
     def decrypt_password(master_pswd, enc_pswd, algorithm = "sha256"):
         salt = base64.b64decode(enc_pswd[:24].encode("utf-8"))
-        key = make_key(master_pswd.encode("utf-8"), algorithm, salt)
+        key = crypto_utils.make_key(master_pswd.encode("utf-8"), algorithm, salt)
         cipher_suite = Fernet(key)
         plain_text = cipher_suite.decrypt(enc_pswd[24:].encode("utf-8"))
         plain_text_utf8 = plain_text.decode("utf-8")

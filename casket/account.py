@@ -1,12 +1,25 @@
+"""
+accounts.py
+
+Mockup class that represent the casket's accounts.
+"""
+
+__authors__ = "Jasoc"
+__version__ = "0.1.beta1"
+__license__ = "GNU General Public License v3.0"
+
+
+import casket
+
 class account:
     name = ''
     email = ''
     attributes = {}
 
     def __repr__(self):
-        return "%n account(%e)" % (self.name, self.email)
+        return "%s account(%s)" % (self.name, self.email)
 
-    def __init__(self, name = 'default account', email = casket.default_email):
+    def __init__(self, name = 'default account', email = "user@example.com"):
         self.name = name
         self.email = email
 

@@ -4,7 +4,7 @@ with open("README.txt", 'r') as f:
     long_description = f.read()
 
 setup(
-   name='Casket',
+   name='casket',
    version='0.1b1',
    license='GNU General Public License v3.0',
    description='A simple password manager written in Python',

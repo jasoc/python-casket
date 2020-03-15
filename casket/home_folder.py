@@ -1,9 +1,11 @@
-#!/usr/bin/env python3
-""" home_folder.py
-    Main script of Casket for parse argument and start the program.
 """
+home_folder.py
+
+Static class for manage the casket's folder in home dir.
+"""
+
 __authors__ = "Jasoc"
-__version__ = "0.1b1"
+__version__ = "0.1.beta1"
 __license__ = "GNU General Public License v3.0"
 
 import os
@@ -18,7 +20,7 @@ import casket
 
 class home_folder:
 
-    HOME_PATH = str(Path.home()) + '/.casket'
+    HOME_PATH = str(Path.home()) + '/casket'
     SUBDIRS = [
     'db',
     'private',
@@ -63,7 +65,7 @@ class home_folder:
             raise exception()
 
     def check_user_exist(user):
-        return os.path.isdir("%h/%u" % (home_folder.SUBFOLDERS[2], user))
+        return os.path.isdir("%s/%s" % (home_folder.SUBFOLDERS[2], user))
 
     def home_folder_exist():
         return os.path.isdir(home_folder.HOME_PATH)
@@ -80,8 +82,6 @@ class home_folder:
                     "date_creation": str(datetime.datetime.now()),
                     "default_algorithm": session.algorithm
                 }
-                casket.log(casket.crypto.hash(session.password_master))
-                casket.log(session.password_master)
                 with open(home_folder.user_config_path(session.username), 'w+') as filehandler:
                     json.dump(data, filehandler)
                 with open(home_folder.master_hash_path(session.username), 'wb') as filehandler:
