@@ -14,17 +14,21 @@ import casket
 class account:
     name = ''
     email = ''
+    id_session = ''
+    password = ''
     attributes = {}
 
     def __repr__(self):
         return "%s account(%s)" % (self.name, self.email)
 
-    def __init__(self, name = 'default account', email = "user@example.com"):
+    def __init__(self, name = 'default account', email = "user@example.com", password = "casket", attributes = {}):
         self.name = name
         self.email = email
+        self.attributes = attributes
+        self.password = password
 
     def set_password_safe(self, password):
-        if not casket.password_validator.check_exist(password):
+        """if not casket.password_validator.check_exist(password):
             if casket.password_validator.check_string(password):
                 self.password = password
             else:
@@ -33,7 +37,8 @@ class account:
             if casket.settings.equal_password_allowed:
                 self.password = password
             else:
-                raise not_valid_password_error
+                raise not_valid_password_error"""
+        self.password = password
 
     def set_password_any(self, password):
         self.password = password

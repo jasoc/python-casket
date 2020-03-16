@@ -33,23 +33,27 @@ class db_utils:
         a.attributes = casket.crypto.encrypt_password(session.password_master, json.dumps(a.attributes))
 
         q = "INSERT INTO main.accounts (%s) VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\');" % (','.join(["name", "pswd", "email", "other_json", "id_session"]), a.name, a.password, a.email, a.attributes, session.username)
-        casket.log(q)
         self._db.query(q)
 
 
     def load_accounts(self, session):
         q = "SELECT * FROM accounts WHERE id_session=\'%s\';" % (session.username)
         res = self._db.query(q)
-        ret = []
+        ret = {}
         for _ in res:
             temp = casket.account()
             temp.name = _[1]
-            temp.pswd = casket.crypto.decrypt_password(session.password_master, _[2])
-            temp.email = casket.crypto.decrypt_password(session.password_master, _[3])
-            temp.other_json = casket.crypto.decrypt_password(session.password_master, _[4])
-            ret.append(temp)
+            temp.password = _[2]
+            temp.email = _[3]
+            temp.attributes = _[4]
+            temp.id_session = _[5]
+            ret[temp.name] = temp
         return ret
 
     def remove_account(self, account, session):
         q = "DELETE FROM accounts WHERE id_session = \'%s\' AND name = \'%s\' ;" % (session.username, account)
         self._db.query(q)
+
+
+    def select_sessions_name(self):
+        return self._db.query("SELECT username FROM sessions;")

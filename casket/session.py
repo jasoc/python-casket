@@ -17,8 +17,8 @@ class session:
         self,
         method,
         username,
+        password_master,
         email = "user@example.com",
-        password_master = "casket",
         algorithm = "sha256"
         ):
 
@@ -26,7 +26,7 @@ class session:
         self.email = email
         self.password_master = password_master
         self.algorithm = algorithm
-        self.accounts = []
+        self.accounts = {}
 
         if not casket.home.home_folder_exist():
             casket.home.make_folders()
@@ -38,9 +38,10 @@ class session:
                 self.db.add_session(self)
             else:
                 raise casket.unable_to_open_session_exception("*** Session username already exist. ***")
+
         elif method == "load":
             if casket.home.check_user_exist(username):
-                if casket.crypto.check_hash(self.password_master, casket.home.master_hash(self.username)):
+                if self.check_password_master(self.password_master):
                     self.db = casket.database()
                     self.accounts = self.db.load_accounts(self)
                 else:
@@ -51,15 +52,33 @@ class session:
             raise Exception("invalid parameter")
 
     def new_account(self, account):
-        if not account.name in [ _.name for _ in self.accounts ]:
+        if not account.name in [ _ for _ in self.accounts ]:
+            account.id_session = self.username
             self.db.add_account(account, self)
             self.accounts = self.db.load_accounts(self)
         else:
             raise Exception("Account name \'%s\' already exist." % (account.name))
 
     def remove_account(self, account):
-        if account in [ _.name for _ in self.accounts ]:
+        if account in [ _ for _ in self.accounts ]:
             self.db.remove_account(account, self)
             self.accounts = self.db.load_accounts(self)
         else:
             raise Exception("Account \'%s\' doesen't exists." % (account))
+
+    def decrypt_accounts(self):
+        dict = {}
+        self.accounts = self.db.load_accounts(self)
+        for _ in self.accounts:
+            temp = {}
+            for __ in self.accounts[_].__dict__:
+                try:
+                    temp[__] = casket.crypto.decrypt_password(
+                        self.password_master, self.accounts[_].__dict__[__])
+                except Exception as e:
+                    temp[__] = self.accounts[_].__dict__[__]
+            dict[self.accounts[_].name] = temp
+        return dict
+
+    def check_password_master(self, password):
+        return casket.crypto.check_hash(password, casket.home.master_hash(self.username))
