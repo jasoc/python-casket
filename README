@@ -3,26 +3,39 @@ Casket
 
 Introduction
 
-Casket is a simple Qt 5 password manager written in python 3.
+Casket is a simple password manager written in python 3.
 
 (BETA: some features may not be available or not working).
 
-Clone the repository and run it with:
+Clone the repository:
 
-    $ python main.py
+    $ git clone https://github.com/jasoc/casket
+
+ and run:
+
+    $ python casket/setup.py
 
 Prerequisites
 
 -   Python 3 (already installed in most Linux distros)
--   Pathlib module
--   PyQt5 module
--   logzero module
--   Cryptography module
--   Other modules that should already be installed (os, sys, sqlite3, pickle, json, base64, passlib)
+
+Modules
+
+You can install the following modules with pip by running:
+
+    $ pip install module
+
+  replace module with the name of the modules.
+
+  - [setuptools](https://pypi.org/project/setuptools/) module.
+  - [logzero](https://pypi.org/project/logzero/) module.
+  - [cryptography](https://pypi.org/project/cryptography/) module.
+  - Other modules that should already be installed.
+    - os, sys, sqlite3, pickle, pathlib, json, datetime, base64.
 
 Contributing
 
-    See the [contributing file](CONTRIBUTING.md).
+[Contribution guidelines for this project.](CONTRIBUTING.md)
 
 License
 
