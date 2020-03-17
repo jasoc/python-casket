@@ -19,8 +19,7 @@ class session:
         username,
         password_master,
         email = "user@example.com",
-        algorithm = "sha256"
-        ):
+        algorithm = "sha256"):
 
         self.username = username
         self.email = email
@@ -28,7 +27,7 @@ class session:
         self.algorithm = algorithm
         self.accounts = {}
 
-        if not casket.home.home_folder_exist():
+        if not casket.home.homefolder_exist():
             casket.home.make_folders()
 
         if method == "new":

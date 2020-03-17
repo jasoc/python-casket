@@ -1,5 +1,5 @@
 """
-sql_utils.py
+sqlutils.py
 
 Support file for querying local sqlite3 databases.
 """
@@ -11,7 +11,7 @@ __license__ = "GNU General Public License v3.0"
 
 import sqlite3
 
-class sql_utils:
+class sqlutils:
 
     def __init__(self, path):
         self._database = sqlite3.connect(path)

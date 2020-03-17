@@ -1,9 +1,9 @@
 from logzero import logger
 
-from .crypto_utils import crypto_utils as crypto
-from .home_folder import home_folder as home
-from .db_utils import db_utils as database
-from .sql_utils import sql_utils
+from .cryptoutils import cryptoutils as crypto
+from .homefolder import homefolder as home
+from .dbutils import dbutils as database
+from .sqlutils import sqlutils
 from .session import session
 from .exceptions import *
 from .account import account

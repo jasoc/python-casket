@@ -1,5 +1,5 @@
 """
-db_utils.py
+dbutils.py
 
 Local interface to the database. Lot of query over here.
 """
@@ -12,10 +12,10 @@ __license__ = "GNU General Public License v3.0"
 import json
 import casket
 
-class db_utils:
+class dbutils:
 
     def __init__(self):
-        self._db = casket.sql_utils(casket.home.DB_PATH)
+        self._db = casket.sqlutils(casket.home.DB_PATH)
 
     def __repr__(self):
         return 'sqlite db %s' % (casket.home.DB_PATH)

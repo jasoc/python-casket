@@ -1,6 +1,6 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
-with open("README.txt", 'r') as f:
+with open("README.md", 'r') as f:
     long_description = f.read()
 
 setup(
@@ -10,7 +10,7 @@ setup(
    description='A simple password manager written in Python',
    author='Jasoc',
    author_email='paridegiunta@gmail.com',
-   packages=['casket'],
+   packages=find_packages(),
    install_requires=['PyQt5'],
    include_package_data=True
 )

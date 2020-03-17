@@ -1,5 +1,5 @@
 """
-crypto_utils.py
+cryptoutils.py
 
 Class for encrypting, decrypting and hashing strings.
 """
@@ -17,7 +17,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from passlib.context import CryptContext
 
-class crypto_utils:
+class cryptoutils:
 
     pwd_context = CryptContext(
         schemes=["pbkdf2_sha256"],
@@ -31,16 +31,16 @@ class crypto_utils:
 
     @staticmethod
     def hash(password):
-        return crypto_utils.pwd_context.hash(password)
+        return cryptoutils.pwd_context.hash(password)
 
     @staticmethod
     def check_hash(password, hashed):
-        return crypto_utils.pwd_context.verify(password, hashed)
+        return cryptoutils.pwd_context.verify(password, hashed)
 
     @staticmethod
     def make_key(password, algorithm, salt):
         kdf = PBKDF2HMAC(
-            algorithm=crypto_utils.algorithms[algorithm],
+            algorithm=cryptoutils.algorithms[algorithm],
             length=32,
             salt=salt,
             iterations=100000,
@@ -50,7 +50,7 @@ class crypto_utils:
 
     @staticmethod
     def encrypt_password(master_pswd, plain_pswd, salt = os.urandom(16), algorithm = "sha256"):
-        key = crypto_utils.make_key(master_pswd.encode("utf-8"), algorithm, salt)
+        key = cryptoutils.make_key(master_pswd.encode("utf-8"), algorithm, salt)
         cipher_suite = Fernet(key)
         cipher_text = cipher_suite.encrypt(plain_pswd.encode("utf-8"))
         enc_pswd = base64.b64encode(salt).decode(
@@ -60,7 +60,7 @@ class crypto_utils:
     @staticmethod
     def decrypt_password(master_pswd, enc_pswd, algorithm = "sha256"):
         salt = base64.b64decode(enc_pswd[:24].encode("utf-8"))
-        key = crypto_utils.make_key(master_pswd.encode("utf-8"), algorithm, salt)
+        key = cryptoutils.make_key(master_pswd.encode("utf-8"), algorithm, salt)
         cipher_suite = Fernet(key)
         plain_text = cipher_suite.decrypt(enc_pswd[24:].encode("utf-8"))
         plain_text_utf8 = plain_text.decode("utf-8")
