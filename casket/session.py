@@ -11,21 +11,19 @@ __license__ = "GNU General Public License v3.0"
 
 import casket
 
+
 class session:
 
-    def __init__(
-        self,
-        method,
-        username,
-        password_master,
-        email = "user@example.com",
-        algorithm = "sha256"):
+    def __init__(self, method, username, password_master,
+                 email="user@example.com", algorithm="sha256"):
 
         self.username = username
         self.email = email
         self.password_master = password_master
         self.algorithm = algorithm
         self.accounts = {}
+        self._decrypt = lambda s, m = self.password_master:
+            casket.crypto.decrypt_password(m, s)
 
         if not casket.home.homefolder_exist():
             casket.home.make_folders()
@@ -36,48 +34,58 @@ class session:
                 self.db = casket.database()
                 self.db.add_session(self)
             else:
-                raise casket.unable_to_open_session_exception("*** Session username already exist. ***")
+                raise casket.unable_to_open_session_exception(
+                    "*** Session username already exist. ***")
 
         elif method == "load":
             if casket.home.check_user_exist(username):
                 if self.check_password_master(self.password_master):
                     self.db = casket.database()
-                    self.accounts = self.db.load_accounts(self)
+                    self.sync_db()
                 else:
-                    raise Exception("password sbaglioata")
+                    raise Exception("Wrong password.")
             else:
                 raise Exception()
         else:
             raise Exception("invalid parameter")
 
     def new_account(self, account):
-        if not account.name in [ _ for _ in self.accounts ]:
+        if account.name in [_ for _ in self.accounts]:
+            raise Exception("Account name \'%s\' already exist." % (
+                account.name))
+        else:
             account.id_session = self.username
             self.db.add_account(account, self)
-            self.accounts = self.db.load_accounts(self)
-        else:
-            raise Exception("Account name \'%s\' already exist." % (account.name))
+            self.sync_db()
 
     def remove_account(self, account):
-        if account in [ _ for _ in self.accounts ]:
+        if account in [_ for _ in self.accounts]:
             self.db.remove_account(account, self)
             self.accounts = self.db.load_accounts(self)
         else:
             raise Exception("Account \'%s\' doesen't exists." % (account))
 
     def decrypt_accounts(self):
-        dict = {}
-        self.accounts = self.db.load_accounts(self)
-        for _ in self.accounts:
-            temp = {}
-            for __ in self.accounts[_].__dict__:
-                try:
-                    temp[__] = casket.crypto.decrypt_password(
-                        self.password_master, self.accounts[_].__dict__[__])
-                except Exception as e:
-                    temp[__] = self.accounts[_].__dict__[__]
-            dict[self.accounts[_].name] = temp
-        return dict
+        def dec_exp(str):
+            try:
+                return self._decrypt(str)
+            except Exception as e:
+                return str
+        return {_: {__: dec_exp(self.accounts[_].__dict__[__])
+                for __ in self.accounts[_].__dict__}
+                for _ in self.accounts}
 
     def check_password_master(self, password):
-        return casket.crypto.check_hash(password, casket.home.master_hash(self.username))
+        return casket.crypto.check_hash(
+            password, casket.home.master_hash(
+                self.username))
+
+    def sync_db(self):
+        res = self.db.select_accounts(self)
+
+        def build_acc(_):
+            temp = casket.account(_[1], _[3], _[2], _[4])
+            temp.id_session = _[5]
+            return temp
+
+        self.accounts = {_[1]: build_acc(_) for _ in res}

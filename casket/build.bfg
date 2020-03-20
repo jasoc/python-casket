@@ -1,0 +1,1 @@
+executable('simple', files=['session.py'])

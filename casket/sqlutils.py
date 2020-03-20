@@ -24,7 +24,6 @@ class sqlutils:
         self._database.commit()
 
     def query(self, query, void=False):
-        ready = False
         self._cursor.execute(query)
         self.save()
         return self._cursor.fetchall()

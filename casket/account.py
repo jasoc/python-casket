@@ -9,8 +9,6 @@ __version__ = "0.1.beta1"
 __license__ = "GNU General Public License v3.0"
 
 
-import casket
-
 class account:
     name = ''
     email = ''
@@ -21,7 +19,8 @@ class account:
     def __repr__(self):
         return "%s account(%s)" % (self.name, self.email)
 
-    def __init__(self, name = 'default account', email = "user@example.com", password = "casket", attributes = {}):
+    def __init__(self, name='default account', email="user@example.com",
+                 password="casket", attributes={}):
         self.name = name
         self.email = email
         self.attributes = attributes
