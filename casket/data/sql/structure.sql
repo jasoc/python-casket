@@ -1,10 +1,10 @@
 CREATE TABLE accounts (
   id_account INTEGER PRIMARY KEY AUTOINCREMENT,
   name       TEXT NOT NULL,
-  pswd       TEXT NOT NULL,
+  password   TEXT NOT NULL,
   email      TEXT NOT NULL,
   other_json TEXT NOT NULL,
-  id_session INTEGER NOT NULL REFERENCES sessions(id_session)
+  id_session TEXT NOT NULL REFERENCES sessions(username)
 );
 
 CREATE TABLE sessions (

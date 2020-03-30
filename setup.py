@@ -11,6 +11,6 @@ setup(
    author='Jasoc',
    author_email='paridegiunta@gmail.com',
    packages=find_packages(),
-   install_requires=['PyQt5'],
+   install_requires=['setuptools', 'logzero', 'cryptography', 'passlib'],
    include_package_data=True
 )
