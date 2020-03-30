@@ -1,14 +1,14 @@
-# Casket ![Python Version](https://img.shields.io/badge/Python-3.7-blue.svg)
+# python-casket ![Python Version](https://img.shields.io/badge/Python-3.8-blue.svg)
 
 ## Introduction
 
 Casket is a simple password manager written in python 3.
 
-(BETA: some features may not be available or not working).
+**BETA:** some features may not be available or not working.
 
 Clone the repository:
 
-    $ git clone https://github.com/jasoc/casket
+    $ git clone https://github.com/jasoc/python-casket
 
  and run:
 
@@ -29,8 +29,7 @@ You can install the following modules with pip by running:
 - [setuptools](https://pypi.org/project/setuptools/) module.
 - [logzero](https://pypi.org/project/logzero/) module.
 - [cryptography](https://pypi.org/project/cryptography/) module.
-- Other modules that should already be installed.
-  - os, sys, sqlite3, pickle, pathlib, json, datetime, base64.
+- Other modules that should already be installed(os, sys, sqlite3, pickle, pathlib, json, datetime, base64.)
 
 ### Contributing
 
@@ -47,3 +46,4 @@ You can install the following modules with pip by running:
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details <http://www.gnu.org/licenses/>.
+[LICENSE](LICENSE)
