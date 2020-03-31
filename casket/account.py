@@ -10,14 +10,12 @@ __license__ = "GNU General Public License v3.0"
 
 
 class account:
+
     name = ''
     email = ''
     id_session = ''
     password = ''
     attributes = {}
-
-    def __repr__(self):
-        return "%s account(%s)" % (self.name, self.email)
 
     def __init__(self, name='default account', email="user@example.com",
                  password="casket", attributes={}):
@@ -25,6 +23,9 @@ class account:
         self.email = email
         self.attributes = attributes
         self.password = password
+
+    def __repr__(self):
+        return "%s account(%s)" % (self.name, self.email)
 
     def set_password_safe(self, password):
         """if not casket.password_validator.check_exist(password):

@@ -9,6 +9,7 @@ __authors__ = "Jasoc"
 __version__ = "0.1.beta1"
 __license__ = "GNU General Public License v3.0"
 
+import json
 import casket
 
 
@@ -22,8 +23,7 @@ class session:
         self.password_master = password_master
         self.algorithm = algorithm
         self.accounts = {}
-        self._decrypt = lambda s, m = self.password_master:
-            casket.crypto.decrypt_password(m, s)
+        self._decrypt = lambda s, m = self.password_master: casket.crypto.decrypt_password(m, s)
 
         if not casket.home.homefolder_exist():
             casket.home.make_folders()
@@ -50,22 +50,55 @@ class session:
             raise casket.invalid_parameter("Invalid method \'%s\'." % (method))
 
     def new_account(self, account):
+<<<<<<< HEAD
         if account.name in [_ for _ in self.accounts]:
             raise casket.account_name_already_exist("Account name \'%s\' already exist." % (
                 account.name))
+=======
+
+        if self.account_exists(account.name):
+            raise Exception("Account name \'%s\' already exist." % (
+                account.name)
+                )
+>>>>>>> 8710f8bb9caa4f4fe9b91ea3b26b6b28e95fcb60
         else:
-            account.id_session = self.username
-            self.db.add_account(account, self)
+            a = account
+            a.password = casket.crypto.encrypt_password(
+                self.password_master, a.password)
+            a.email = casket.crypto.encrypt_password(
+                self.password_master, a.email)
+            a.attributes = casket.crypto.encrypt_password(
+            self.password_master, json.dumps(a.attributes))
+            a.id_session = self.username
+            self.db.add_account(a, self)
             self.sync_db()
 
-    def remove_account(self, account):
-        if account in [_ for _ in self.accounts]:
-            self.db.remove_account(account, self)
-            self.accounts = self.db.load_accounts(self)
+    def remove_account(self, account_name):
+        if self.account_exists(account_name):
+            self.db.remove_account(account_name, self)
+            self.sync_db()
         else:
+<<<<<<< HEAD
             raise casket.account_doesnt_exist("Account \'%s\' doesen't exists." % (account))
+=======
+            raise Exception("Account \'%s\' doesen't exists." % (account_name))
+
+    def edit_account(self, account_name, column, new_value):
+        if column in ['name', 'password', 'email']:
+            if self.account_exists(account_name):
+                if column != 'name':
+                    new_value = casket.crypto.encrypt_password(
+                        self.password_master, new_value)
+                self.db.edit_account(self.username, account_name, column, new_value)
+                self.sync_db()
+            else:
+                raise Exception("Account doesen't exist.")
+        else:
+            raise Exception("Invalid column.")
+>>>>>>> 8710f8bb9caa4f4fe9b91ea3b26b6b28e95fcb60
 
     def decrypt_accounts(self):
+        self.sync_db()
         def dec_exp(str):
             try:
                 return self._decrypt(str)
@@ -89,3 +122,7 @@ class session:
             return temp
 
         self.accounts = {_[1]: build_acc(_) for _ in res}
+
+    def account_exists(self, account_name):
+        self.sync_db()
+        return account_name in [_ for _ in self.accounts]

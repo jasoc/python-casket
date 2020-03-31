@@ -9,7 +9,6 @@ __version__ = "0.1.beta1"
 __license__ = "GNU General Public License v3.0"
 
 
-import json
 import casket
 import sqlite3
 
@@ -43,34 +42,37 @@ class dbutils:
         return self.query("SELECT * FROM %s" % (table))
 
     def add_account(self, account, session):
-        a = account
-        a.password = casket.crypto.encrypt_password(
-            session.password_master, a.password)
-        a.email = casket.crypto.encrypt_password(
-            session.password_master, a.email)
-        a.attributes = casket.crypto.encrypt_password(
-            session.password_master, json.dumps(a.attributes))
-
         q = """INSERT INTO main.accounts
-            (%s) VALUES
-            (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\');""" % (
-            ','.join(["name", "pswd", "email", "other_json", "id_session"]),
-            a.name, a.password, a.email, a.attributes, session.username)
-
+        (%s) VALUES
+        (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\');""" % (
+            ','.join(["name", "password", "email", "other_json", "id_session"]),
+            account.name, account.password, account.email,
+            account.attributes, session.username
+        )
+        
         self.query(q)
 
     def select_accounts(self, session):
         q = "SELECT * FROM accounts WHERE id_session=\'%s\';" % (
-            session.username)
+            session.username
+        )
 
         return self.query(q)
 
     def remove_account(self, account, session):
         q = """DELETE FROM accounts
-            WHERE id_session = \'%s\' AND name = \'%s\' ;""" % (
-            session.username, account)
+            WHERE id_session = \'%s\' AND name = \'%s\';""" % (
+                session.username, account
+            )
 
         self.query(q)
 
     def select_sessions_name(self):
         return self.query("SELECT username FROM sessions;")
+
+    def edit_account(self, session, account_name, column, value):
+        q = """UPDATE accounts SET %s = \'%s\' WHERE name = \'%s\' AND id_session = \'%s\';""" % (
+            column, value, account_name, session
+        )
+        casket.log(q)
+        self.query(q)
