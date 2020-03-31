@@ -43,15 +43,15 @@ class session:
                     self.db = casket.database()
                     self.sync_db()
                 else:
-                    raise Exception("Wrong password.")
+                    raise casket.wrong_password("Wrong password.")
             else:
-                raise Exception()
+                raise casket.user_doesnt_exist("User doesn't exist.")
         else:
-            raise Exception("invalid parameter")
+            raise casket.invalid_parameter("Invalid method \'%s\'." % (method))
 
     def new_account(self, account):
         if account.name in [_ for _ in self.accounts]:
-            raise Exception("Account name \'%s\' already exist." % (
+            raise casket.account_name_already_exist("Account name \'%s\' already exist." % (
                 account.name))
         else:
             account.id_session = self.username
@@ -63,7 +63,7 @@ class session:
             self.db.remove_account(account, self)
             self.accounts = self.db.load_accounts(self)
         else:
-            raise Exception("Account \'%s\' doesen't exists." % (account))
+            raise casket.account_doesnt_exist("Account \'%s\' doesen't exists." % (account))
 
     def decrypt_accounts(self):
         def dec_exp(str):
