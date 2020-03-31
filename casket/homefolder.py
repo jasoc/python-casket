@@ -18,56 +18,64 @@ from pathlib import Path
 
 import casket
 
+
 class homefolder:
 
-    HOME_PATH = str(Path.home()) + '/casket'
-    SUBDIRS = ['db', 'private', 'sessions']
-    DB_PATH = '%s/%s/casket.db' % (HOME_PATH, SUBDIRS[0])
-    SUBFOLDERS = [ "%s/%s/" %(str(Path.home()) + '/casket', _) for _ in SUBDIRS ]
+    def __init__(self, folder_name='casket'):
+        self.HOME_PATH = '%s/%s' % (str(Path.home()), folder_name)
+        self.SUBDIRS = [
+            'db',
+            'private',
+            'sessions'
+        ]
+        self.DB_PATH = '%s/%s/casket.db' % (self.HOME_PATH, self.SUBDIRS[0])
+        self.SUBFOLDERS = ["%s/%s/" % (str(Path.home()) + '/casket', _)
+                           for _ in self.SUBDIRS]
 
-    def master_hash_path(username):
-        return homefolder.SUBFOLDERS[1] + username
+    def master_hash_path(self, username):
+        return self.SUBFOLDERS[1] + username
 
-    def user_config_path(username):
-        return '/'.join([homefolder.SUBFOLDERS[2], username, 'config.json'])
+    def user_config_path(self, username):
+        return '/'.join([self.SUBFOLDERS[2], username, 'config.json'])
 
-    def user_config(username):
+    def user_config(self, username):
         try:
-            with open(user_config_path(username), 'r') as outfile:
+            with open(self.user_config_path(username), 'r') as outfile:
                 return json.load(outfile)
         except Exception as e:
             raise e
 
-    def master_hash(username):
+    def master_hash(self, username):
         try:
-            with open(homefolder.master_hash_path(username), 'rb') as filehandler:
+            with open(self.master_hash_path(username), 'rb') as filehandler:
                 return pickle.load(filehandler)
         except Exception as e:
             raise e
 
-    def make_folders():
-        if not os.path.isdir(homefolder.HOME_PATH):
+    def make_folders(self):
+        if not os.path.isdir(self.HOME_PATH):
             casket.log("Performing first setup.")
-            os.mkdir(homefolder.HOME_PATH)
+            os.mkdir(self.HOME_PATH)
 
-            for i in homefolder.SUBFOLDERS:
-                os.mkdir(i)
+            for _ in self.SUBFOLDERS:
+                os.mkdir(_)
 
-            conn = sqlite3.connect(homefolder.DB_PATH)
-            os.system('sqlite3 %s < casket/data/sql/structure.sql' % (homefolder.DB_PATH))
+            conn = sqlite3.connect(self.DB_PATH)
+            os.system('sqlite3 %s < casket/data/sql/structure.sql' %
+                      (self.DB_PATH))
         else:
-            raise exception()
+            raise Exception()
 
-    def check_user_exist(user):
-        return os.path.isdir("%s/%s" % (homefolder.SUBFOLDERS[2], user))
+    def check_user_exist(self, user):
+        return os.path.isdir("%s/%s" % (self.SUBFOLDERS[2], user))
 
-    def homefolder_exist():
-        return os.path.isdir(homefolder.HOME_PATH)
+    def homefolder_exist(self):
+        return os.path.isdir(self.HOME_PATH)
 
-    def make_user_folder(session):
-        folder = homefolder.SUBFOLDERS[2] + "/" + session.username
+    def make_user_folder(self, session):
+        folder = self.SUBFOLDERS[2] + "/" + session.username
 
-        if os.path.isdir(homefolder.HOME_PATH):
+        if os.path.isdir(self.HOME_PATH):
             if not os.path.isdir(folder):
                 os.mkdir(folder)
 
@@ -79,11 +87,12 @@ class homefolder:
                     "default_algorithm": session.algorithm
                 }
 
-                with open(homefolder.user_config_path(session.username), 'w+') as filehandler:
+                with open(self.user_config_path(session.username), 'w+') as filehandler:
                     json.dump(data, filehandler)
 
-                with open(homefolder.master_hash_path(session.username), 'wb') as filehandler:
-                    pickle.dump(casket.crypto.hash(session.password_master), filehandler)
+                with open(self.master_hash_path(session.username), 'wb') as filehandler:
+                    pickle.dump(casket.crypto.hash(
+                        session.password_master), filehandler)
             else:
                 raise Exception()
         else:

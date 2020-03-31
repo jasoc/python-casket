@@ -45,11 +45,12 @@ class dbutils:
         q = """INSERT INTO main.accounts
         (%s) VALUES
         (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\');""" % (
-            ','.join(["name", "password", "email", "other_json", "id_session"]),
+            ','.join(["name", "password", "email",
+                      "other_json", "id_session"]),
             account.name, account.password, account.email,
             account.attributes, session.username
         )
-        
+
         self.query(q)
 
     def select_accounts(self, session):
@@ -62,8 +63,8 @@ class dbutils:
     def remove_account(self, account, session):
         q = """DELETE FROM accounts
             WHERE id_session = \'%s\' AND name = \'%s\';""" % (
-                session.username, account
-            )
+            session.username, account
+        )
 
         self.query(q)
 
