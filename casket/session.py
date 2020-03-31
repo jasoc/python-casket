@@ -69,18 +69,32 @@ class session:
                     self.db = casket.database()
                     self.sync_db()
                 else:
-                    raise Exception("Wrong password.")
+                    raise casket.wrong_password("Wrong password.")
             else:
-                raise Exception()
+                raise casket.user_doesnt_exist("User doesn't exist.")
         else:
-            raise Exception("invalid parameter")
+            raise casket.invalid_parameter("Invalid method \'%s\'." % (method))
 
     def new_account(self, account):
+<<<<<<< HEAD
         """Add a new account object to the database."""
         if self.account_exists(account.name):
             raise Exception("Account name \'%s\' already exist." % (
                 account.name)
             )
+=======
+<<<<<<< HEAD
+        if account.name in [_ for _ in self.accounts]:
+            raise casket.account_name_already_exist("Account name \'%s\' already exist." % (
+                account.name))
+=======
+
+        if self.account_exists(account.name):
+            raise Exception("Account name \'%s\' already exist." % (
+                account.name)
+                )
+>>>>>>> 8710f8bb9caa4f4fe9b91ea3b26b6b28e95fcb60
+>>>>>>> 0cf642502faf79efab35c34facdd72875317d846
         else:
             a = account
             a.password = casket.crypto.encrypt_password(
@@ -102,9 +116,16 @@ class session:
             self.db.remove_account(account_name, self)
             self.sync_db()
         else:
+<<<<<<< HEAD
             raise Exception(
                 "Account \'%s\' doesen't exists." % (account_name)
             )
+=======
+<<<<<<< HEAD
+            raise casket.account_doesnt_exist("Account \'%s\' doesen't exists." % (account))
+=======
+            raise Exception("Account \'%s\' doesen't exists." % (account_name))
+>>>>>>> 0cf642502faf79efab35c34facdd72875317d846
 
     def edit_account(self, account_name, column, new_value):
         """Creates a model for a combobox showing factories.
@@ -125,6 +146,7 @@ class session:
                 raise Exception("Account doesen't exist.")
         else:
             raise Exception("Invalid column.")
+>>>>>>> 8710f8bb9caa4f4fe9b91ea3b26b6b28e95fcb60
 
     def decrypt_accounts(self):
         """Return a dictionary with all the accounts with
