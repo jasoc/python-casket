@@ -107,8 +107,7 @@ class session:
             self.db.remove_account(account_name, self)
             self.sync_db()
         else:
-            raise casket.account_doesnt_exist("Account \'%s\' doesen't exists." % (account))
-
+            raise casket.account_doesnt_exist("Account \'%s\' doesen't exists." % (account_name))
 
     def edit_account(self, account_name, column, new_value):
         """Creates a model for a combobox showing factories.
