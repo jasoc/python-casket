@@ -1,13 +1,24 @@
+# -*- coding: utf-8 -*-
+# Casket python module
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 """
 cryptoutils.py
 
 Class for encrypting, decrypting and hashing strings.
 """
-
-__authors__ = "Jasoc"
-__version__ = "0.1.beta1"
-__license__ = "GNU General Public License v3.0"
-
 
 import os
 import base64
@@ -19,26 +30,31 @@ from passlib.context import CryptContext
 
 import casket
 
+
 class cryptoutils:
 
     pwd_context = CryptContext(
         schemes=["pbkdf2_sha256"],
         default="pbkdf2_sha256",
         pbkdf2_sha256__default_rounds=30000
-        )
+    )
 
     algorithms = {
-        "sha256" : hashes.SHA256(),
-        "sha224" : hashes.SHA224(),
-        "sha384" : hashes.SHA256(),
-        "sha512" : hashes.SHA256(),
-        "blake2b" : hashes.BLAKE2b(64),
-        "blake2s" : hashes.BLAKE2s(32),
-        "sha3_256" : hashes.SHA3_256(),
-        "sha3_224" : hashes.SHA3_224(),
-        "sha3_384" : hashes.SHA3_384(),
-        "sha3_512" : hashes.SHA3_512()
+        "sha256": hashes.SHA256(),
+        "sha224": hashes.SHA224(),
+        "sha384": hashes.SHA256(),
+        "sha512": hashes.SHA256(),
+        "blake2b": hashes.BLAKE2b(64),
+        "blake2s": hashes.BLAKE2s(32),
+        "sha3_256": hashes.SHA3_256(),
+        "sha3_224": hashes.SHA3_224(),
+        "sha3_384": hashes.SHA3_384(),
+        "sha3_512": hashes.SHA3_512()
     }
+
+    @staticmethod
+    def list_algorithms():
+        return [_ for _ in cryptoutils.algorithms]
 
     @staticmethod
     def hash(password):
@@ -52,7 +68,7 @@ class cryptoutils:
     def make_key(password, algorithm, salt):
         if not algorithm in cryptoutils.algorithms:
             raise casket.invalid_algorithm("Algorithm %s is not supported." % (
-            algorithm))
+                algorithm))
         else:
             algorithm = cryptoutils.algorithms[algorithm]
 
@@ -66,8 +82,9 @@ class cryptoutils:
         return base64.urlsafe_b64encode(kdf.derive(password))
 
     @staticmethod
-    def encrypt_password(master_pswd, plain_pswd, salt = os.urandom(16), algorithm = "sha256"):
-        key = cryptoutils.make_key(master_pswd.encode("utf-8"), algorithm, salt)
+    def encrypt_password(master_pswd, plain_pswd, salt=os.urandom(16), algorithm="sha256"):
+        key = cryptoutils.make_key(
+            master_pswd.encode("utf-8"), algorithm, salt)
         cipher_suite = Fernet(key)
         cipher_text = cipher_suite.encrypt(plain_pswd.encode("utf-8"))
         enc_pswd = base64.b64encode(salt).decode(
@@ -75,9 +92,10 @@ class cryptoutils:
         return enc_pswd
 
     @staticmethod
-    def decrypt_password(master_pswd, enc_pswd, algorithm = "sha256"):
+    def decrypt_password(master_pswd, enc_pswd, algorithm="sha256"):
         salt = base64.b64decode(enc_pswd[:24].encode("utf-8"))
-        key = cryptoutils.make_key(master_pswd.encode("utf-8"), algorithm, salt)
+        key = cryptoutils.make_key(
+            master_pswd.encode("utf-8"), algorithm, salt)
         cipher_suite = Fernet(key)
         plain_text = cipher_suite.decrypt(enc_pswd[24:].encode("utf-8"))
         plain_text_utf8 = plain_text.decode("utf-8")

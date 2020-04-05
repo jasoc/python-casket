@@ -1,13 +1,24 @@
+# -*- coding: utf-8 -*-
+# Casket python module
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 """
 dbutils.py
 
 Local interface to the database. Lot of query over here.
 """
-
-__authors__ = "Jasoc"
-__version__ = "0.1.beta1"
-__license__ = "GNU General Public License v3.0"
-
 
 import casket
 import sqlite3
@@ -16,11 +27,12 @@ import sqlite3
 class dbutils:
 
     def __init__(self, path):
+        self.path = path
         self._database = sqlite3.connect(path)
         self._cursor = self._database.cursor()
 
     def __repr__(self):
-        return 'sqlite db %s' % (casket.home.DB_PATH)
+        return 'sqlite db %s' % (self.path)
 
     def query(self, query, void=False):
         self._cursor.execute(query)

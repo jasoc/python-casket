@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-# Casket
-# Copyright (c) 2009, Paride Giunta <paridegiunta@gmail.com>
-# Copyright (c) 2009, Riccardo Nuncibello <riccardo.n1402@gmail.com>
+# Casket python module
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
+# version 3 of the License, or (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -103,7 +101,8 @@ class session:
             self.db.remove_account(account_name, self)
             self.sync_db()
         else:
-            raise casket.account_doesnt_exist("Account \'%s\' doesen't exists." % (account_name))
+            raise casket.account_doesnt_exist(
+                "Account \'%s\' doesen't exists." % (account_name))
 
     def edit_account(self, account_name, column, new_value):
         """Creates a model for a combobox showing factories.
