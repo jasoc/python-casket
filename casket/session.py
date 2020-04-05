@@ -46,8 +46,8 @@ class session:
         self.password_master = password_master
         self.algorithm = algorithm
         self.accounts = {}
-        self._decrypt = lambda s, m = self.password_master: casket.crypto.decrypt_password(
-            m, s)
+        self._decrypt = lambda s, a, m = self.password_master: casket.crypto.decrypt_password(
+            m, s, algorithm=a)
 
         self.home = casket.home()
         if not self.home.homefolder_exist():
@@ -56,7 +56,7 @@ class session:
         if method == "new":
             if not self.home.check_user_exist(username):
                 self.home.make_user_folder(self)
-                self.db = casket.database()
+                self.db = casket.database(self.home.DB_PATH)
                 self.db.add_session(self)
             else:
                 raise casket.unable_to_open_session_exception(
@@ -66,7 +66,7 @@ class session:
         elif method == "load":
             if self.home.check_user_exist(username):
                 if self.check_password_master(self.password_master):
-                    self.db = casket.database()
+                    self.db = casket.database(self.home.DB_PATH)
                     self.sync_db()
                 else:
                     raise casket.wrong_password("Wrong password.")
@@ -75,30 +75,26 @@ class session:
         else:
             raise casket.invalid_parameter("Invalid method \'%s\'." % (method))
 
-    def new_account(self, account):
+    def new_account(self, account, algorithm):
         """Add a new account object to the database."""
-        if self.account_exists(account.name):
-            raise Exception("Account name \'%s\' already exist." % (
-                account.name)
-            )
 
-        if account.name in [_ for _ in self.accounts]:
+        if self.account_exists(account.name):
             raise casket.account_name_already_exist("Account name \'%s\' already exist." % (
                 account.name))
 
         else:
             a = account
             a.password = casket.crypto.encrypt_password(
-                self.password_master, a.password)
+                self.password_master, a.password, algorithm=algorithm)
 
             a.email = casket.crypto.encrypt_password(
-                self.password_master, a.email)
+                self.password_master, a.email, algorithm=algorithm)
 
             a.attributes = casket.crypto.encrypt_password(
-                self.password_master, json.dumps(a.attributes))
+                self.password_master, json.dumps(a.attributes), algorithm=algorithm)
 
             a.id_session = self.username
-            self.db.add_account(a, self)
+            self.db.add_account(a, algorithm, self)
             self.sync_db()
 
     def remove_account(self, account_name):
@@ -120,7 +116,7 @@ class session:
             if self.account_exists(account_name):
                 if column != 'name':
                     new_value = casket.crypto.encrypt_password(
-                        self.password_master, new_value)
+                        self.password_master, new_value, algorithm=self.accounts[account_name].algorithm)
                 self.db.edit_account(
                     self.username, account_name, column, new_value)
                 self.sync_db()
@@ -135,13 +131,13 @@ class session:
         """
         self.sync_db()
 
-        def dec_exp(str):
+        def dec_exp(str, alg):
             try:
-                return self._decrypt(str)
+                return self._decrypt(str, alg)
             except Exception:
                 return str
 
-        return {_: {__: dec_exp(self.accounts[_].__dict__[__])
+        return {_: {__: dec_exp(self.accounts[_].__dict__[__], self.accounts[_].__dict__["algorithm"])
                     for __ in self.accounts[_].__dict__}
                 for _ in self.accounts}
 
@@ -157,7 +153,8 @@ class session:
 
         def build_acc(_):
             temp = casket.account(_[1], _[3], _[2], _[4])
-            temp.id_session = _[5]
+            temp.id_session = _[6]
+            temp.algorithm = _[5]
             return temp
 
         self.accounts = {_[1]: build_acc(_) for _ in res}

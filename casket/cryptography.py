@@ -17,6 +17,8 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from passlib.context import CryptContext
 
+import casket
+
 class cryptoutils:
 
     pwd_context = CryptContext(
@@ -26,7 +28,16 @@ class cryptoutils:
         )
 
     algorithms = {
-        "sha256" : hashes.SHA256()
+        "sha256" : hashes.SHA256(),
+        "sha224" : hashes.SHA224(),
+        "sha384" : hashes.SHA256(),
+        "sha512" : hashes.SHA256(),
+        "blake2b" : hashes.BLAKE2b(64),
+        "blake2s" : hashes.BLAKE2s(32),
+        "sha3_256" : hashes.SHA3_256(),
+        "sha3_224" : hashes.SHA3_224(),
+        "sha3_384" : hashes.SHA3_384(),
+        "sha3_512" : hashes.SHA3_512()
     }
 
     @staticmethod
@@ -39,8 +50,14 @@ class cryptoutils:
 
     @staticmethod
     def make_key(password, algorithm, salt):
+        if not algorithm in cryptoutils.algorithms:
+            raise casket.invalid_algorithm("Algorithm %s is not supported." % (
+            algorithm))
+        else:
+            algorithm = cryptoutils.algorithms[algorithm]
+
         kdf = PBKDF2HMAC(
-            algorithm=cryptoutils.algorithms[algorithm],
+            algorithm=algorithm,
             length=32,
             salt=salt,
             iterations=100000,

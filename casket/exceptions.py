@@ -21,3 +21,7 @@ class account_name_already_exist(Exception):
 class account_doesnt_exist(Exception):
     """Exception raised when the account doesn't exist."""
     pass
+
+class invalid_algorithm(Exception):
+    """Exception raised when user instert manually an inexistent algorithm."""
+    pass

@@ -15,7 +15,7 @@ import sqlite3
 
 class dbutils:
 
-    def __init__(self, path=casket.home.DB_PATH):
+    def __init__(self, path):
         self._database = sqlite3.connect(path)
         self._cursor = self._database.cursor()
 
@@ -41,14 +41,14 @@ class dbutils:
     def select_all(self, table):
         return self.query("SELECT * FROM %s" % (table))
 
-    def add_account(self, account, session):
+    def add_account(self, account, algorithm, session):
         q = """INSERT INTO main.accounts
         (%s) VALUES
-        (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\');""" % (
+        (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\');""" % (
             ','.join(["name", "password", "email",
-                      "other_json", "id_session"]),
+                      "other_json", "algorithm", "id_session"]),
             account.name, account.password, account.email,
-            account.attributes, session.username
+            account.attributes, algorithm, session.username
         )
 
         self.query(q)
@@ -75,5 +75,4 @@ class dbutils:
         q = """UPDATE accounts SET %s = \'%s\' WHERE name = \'%s\' AND id_session = \'%s\';""" % (
             column, value, account_name, session
         )
-        casket.log(q)
         self.query(q)
