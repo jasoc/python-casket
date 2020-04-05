@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Pitivi video editor
+# Casket
 # Copyright (c) 2009, Paride Giunta <paridegiunta@gmail.com>
 # Copyright (c) 2009, Riccardo Nuncibello <riccardo.n1402@gmail.com>
 #
