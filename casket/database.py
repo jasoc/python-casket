@@ -15,7 +15,7 @@
 # License along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 """
-dbutils.py
+database.py
 
 Local interface to the database. Lot of query over here.
 """

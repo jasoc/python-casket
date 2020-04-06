@@ -15,7 +15,7 @@
 # License along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 """
-accounts.py
+account.py
 
 Mockup class that represent the casket's accounts.
 """

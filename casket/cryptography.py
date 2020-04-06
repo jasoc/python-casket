@@ -15,7 +15,7 @@
 # License along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 """
-cryptoutils.py
+cryptography.py
 
 Class for encrypting, decrypting and hashing strings.
 """
