@@ -150,10 +150,10 @@ class session:
         """Query the DB for syncronize the attribute with new values."""
         res = self.db.select_accounts(self)
 
-        def build_acc(_):
-            temp = casket.account(_[1], _[3], _[2], _[4])
-            temp.id_session = _[6]
-            temp.algorithm = _[5]
+        def build_acc(a):
+            temp = casket.account(a[1], a[3], a[2], a[4])
+            temp.id_session = a[6]
+            temp.algorithm = a[5]
             return temp
 
         self.accounts = {_[1]: build_acc(_) for _ in res}
