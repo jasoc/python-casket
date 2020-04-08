@@ -1,10 +1,35 @@
+# -*- coding: utf-8 -*-
+# Casket python module
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this program; if not, see <http://www.gnu.org/licenses/>.
+
+"""
+passwords.py
+
+Set of functions for elaborate passwords, generate randomic ones
+and check the security level.
+"""
+
 import random
 import string
 
 
 minimum_len = 8
-specials = ' ð¶&|§"#ł«”.{“]€½;[¬_ŋ£/:ß@æ¢ŧ%=µđ³$(~¹»+²)?°¼*!←ø↓\\,^→-}ç`ñþħ`'
-numbers = '0123456789'
+specials_characters_arr = '!\"\'\\#$%&()*+,-./:;<=>?@[]^_` {|}~'
+numbers_arr = string.digits
+lower_letters_arr = string.ascii_lowercase
+upper_letters_arr = string.ascii_uppercase
 
 
 def _compare(l1, l2):
@@ -18,7 +43,7 @@ def _compare(l1, l2):
 
 
 def has_special_characters(string):
-    return _compare(string, specials)
+    return _compare(string, specials_characters_arr)
 
 
 def has_upper_and_lower(string):
@@ -30,11 +55,24 @@ def has_minimum_length(string):
 
 
 def is_alphanumeric(string):
-    return _compare(string, numbers)
+    return _compare(string, numbers_arr)
 
 
 def verify_security_password(password, security_grade=4):
-
+    """Verify if the given password match the security requirements
+       according with the passed security grade.
+    Args:
+        password (str):       The password to check.
+        security_grade (int): Grade of security that the password
+                              must have for the function to return True.
+                              Accepted grades:
+                               - 0: Every passwords accepted.
+                               - 1: Only minimum length check.
+                               - 0: Check if is alphanumeric.
+                               - 0: Check if contain both lower and upper characters.
+                               - 0: Check if contain special characters.
+    Returns: (bool)
+    """
     if not type(password) == type(''):
         raise Exception()
 
@@ -55,41 +93,50 @@ def verify_security_password(password, security_grade=4):
     return flag
 
 
-def generate_password(length=minimum_len*2):
+def generate_password(length=minimum_len*2, special_characters=True,
+			upper_letters=True, lower_letters=True, digits=True):
+    """generate and return randomic password according to passed
+       optional parameters.
+    Args:
+        length (int):              The length the returned password will have. 
+        special_characters (bool): If the password must have special characters.
+        upper_letters (bool):      If the password must have upper letters.
+        lower_letters (bool):      If the password must have lower letters.
+        digits (bool):             If the password must have numbers.
 
-    if length < minimum_len:
-        raise Exception()
+    Returns: (str)
+    """
+	if length < minimum_len:
+		raise Exception()
 
-    if length % 4 == 0:
-        div = int(length / 4)
-        res = div
-    else:
-        div = int(length // 3)
-        res = int(length % 3)
+	def mix(string):
+		string = [_ for _ in string]
+		for i, j in enumerate(string):
+			rand = random.randint(0, len(string))
+			string.pop(i)
+			string.insert(rand, j)
+		return ''.join(string)
+	
+	arr_chars = []
+	cnt = 0
 
-    def mix(string):
-        string = [_ for _ in string]
-        for i, j in enumerate(string):
-            rand = random.randint(0, len(string))
-            val = j
-            string.pop(i)
-            string.insert(rand, val)
-        return ''.join(string)
+	if special_characters:
+		arr_chars.append(specials_characters_arr)
+		cnt += 1
+	if upper_letters:
+		arr_chars.append(upper_letters_arr)
+		cnt += 1
+	if lower_letters:
+		arr_chars.append(lower_letters_arr)
+		cnt += 1
+	if digits:
+		arr_chars.append(numbers_arr)
+		cnt += 1
 
-    lower_letters = string.ascii_lowercase
-    upper_letters = string.ascii_uppercase
+	pswd = ''
+	for _ in range(cnt):
+		pswd += random.choice(arr_chars[_])
+	for _ in range(length - cnt):
+		pswd += random.choice(random.choice(arr_chars))
 
-    pswd = ''
-    pswd += ''.join(random.choice(lower_letters) for i in range(div))
-    pswd += ''.join(random.choice(upper_letters) for i in range(div))
-    pswd += ''.join(random.choice(specials) for i in range(div))
-    pswd += ''.join(random.choice(numbers) for i in range(res))
-
-    return mix(pswd)
-
-
-for _ in range(minimum_len, 180):
-    p = generate_password(_)
-    print(str(len(p)) + ": " + str(p))
-
-print(generate_password())
+	return mix(pswd)
