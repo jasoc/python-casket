@@ -10,5 +10,6 @@ CREATE TABLE accounts (
 
 CREATE TABLE sessions (
   username   TEXT PRIMARY KEY,
-  email      TEXT NOT NULL
+  email      TEXT NOT NULL,
+  algorithm  TEXT NOT NULL
 );

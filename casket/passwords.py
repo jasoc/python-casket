@@ -24,38 +24,36 @@ and check the security level.
 import random
 import string
 
+MINIMUM_LENGTH = 8
+SPECIALS_CHARACTERS_ARR = '!\"\'\\#$%&()*+,-./:;<=>?@[]^_` {|}~'
+NUMBERS_ARR = string.digits
+LOWER_LETTERS_ARR = string.ascii_lowercase
+UPPER_LETTERS_ARR = string.ascii_uppercase
 
-minimum_len = 8
-specials_characters_arr = '!\"\'\\#$%&()*+,-./:;<=>?@[]^_` {|}~'
-numbers_arr = string.digits
-lower_letters_arr = string.ascii_lowercase
-upper_letters_arr = string.ascii_uppercase
 
-
-def _compare(l1, l2):
+def _compare(list_1, list_2):
     result = False
-    for x in l1:
-        for y in l2:
-            if x == y:
-                result = True
-                return result
+    for _ in list_1:
+        for __ in list_2:
+            if _ == __:
+                return True
     return result
 
 
-def has_special_characters(string):
-    return _compare(string, specials_characters_arr)
+def has_special_characters(value):
+    return _compare(value, SPECIALS_CHARACTERS_ARR)
 
 
-def has_upper_and_lower(string):
-    return not string.isupper() and not string.islower()
+def has_upper_and_lower(value):
+    return not value.isupper() and not value.islower()
 
 
-def has_minimum_length(string):
-    return len(string) >= minimum_len
+def has_minimum_length(value):
+    return len(value) >= MINIMUM_LENGTH
 
 
-def is_alphanumeric(string):
-    return _compare(string, numbers_arr)
+def is_alphanumeric(value):
+    return _compare(value, NUMBERS_ARR)
 
 
 def verify_security_password(password, security_grade=4):
@@ -73,10 +71,10 @@ def verify_security_password(password, security_grade=4):
                                - 0: Check if contain special characters.
     Returns: (bool)
     """
-    if not type(password) == type(''):
+    if not password.isistance('string'):
         raise Exception()
 
-    if not security_grade in [0, 1, 2, 3, 4]:
+    if security_grade not in [0, 1, 2, 3, 4]:
         raise Exception()
 
     checkers_arr = [
@@ -93,50 +91,50 @@ def verify_security_password(password, security_grade=4):
     return flag
 
 
-def generate_password(length=minimum_len*2, special_characters=True,
-			upper_letters=True, lower_letters=True, digits=True):
+def generate_password(length=MINIMUM_LENGTH*2, special_characters=True,
+                      upper_letters=True, lower_letters=True, digits=True):
     """generate and return randomic password according to passed
        optional parameters.
     Args:
-        length (int):              The length the returned password will have. 
-        special_characters (bool): If the password must have special characters.
-        upper_letters (bool):      If the password must have upper letters.
-        lower_letters (bool):      If the password must have lower letters.
-        digits (bool):             If the password must have numbers.
+            length (int):              The length the returned password will have.
+            special_characters (bool): If the password must have special characters.
+            upper_letters (bool):      If the password must have upper letters.
+            lower_letters (bool):      If the password must have lower letters.
+            digits (bool):             If the password must have numbers.
 
     Returns: (str)
     """
-	if length < minimum_len:
-		raise Exception()
+    if length < MINIMUM_LENGTH:
+        raise Exception()
 
-	def mix(string):
-		string = [_ for _ in string]
-		for i, j in enumerate(string):
-			rand = random.randint(0, len(string))
-			string.pop(i)
-			string.insert(rand, j)
-		return ''.join(string)
-	
-	arr_chars = []
-	cnt = 0
+    def mix(value):
+        value = [_ for _ in value]
+        for i, j in enumerate(value):
+            rand = random.randint(0, len(value))
+            value.pop(i)
+            value.insert(rand, j)
+        return ''.join(string)
 
-	if special_characters:
-		arr_chars.append(specials_characters_arr)
-		cnt += 1
-	if upper_letters:
-		arr_chars.append(upper_letters_arr)
-		cnt += 1
-	if lower_letters:
-		arr_chars.append(lower_letters_arr)
-		cnt += 1
-	if digits:
-		arr_chars.append(numbers_arr)
-		cnt += 1
+    arr_chars = []
+    cnt = 0
 
-	pswd = ''
-	for _ in range(cnt):
-		pswd += random.choice(arr_chars[_])
-	for _ in range(length - cnt):
-		pswd += random.choice(random.choice(arr_chars))
+    if special_characters:
+        arr_chars.append(SPECIALS_CHARACTERS_ARR)
+        cnt += 1
+    if upper_letters:
+        arr_chars.append(UPPER_LETTERS_ARR)
+        cnt += 1
+    if lower_letters:
+        arr_chars.append(LOWER_LETTERS_ARR)
+        cnt += 1
+    if digits:
+        arr_chars.append(NUMBERS_ARR)
+        cnt += 1
 
-	return mix(pswd)
+    pswd = ''
+    for _ in range(cnt):
+        pswd += random.choice(arr_chars[_])
+    for _ in range(length - cnt):
+        pswd += random.choice(random.choice(arr_chars))
+
+    return mix(pswd)

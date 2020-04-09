@@ -31,7 +31,7 @@ from passlib.context import CryptContext
 import casket
 
 
-class cryptoutils:
+class CryptoUtils:
 
     pwd_context = CryptContext(
         schemes=["pbkdf2_sha256"],
@@ -53,27 +53,21 @@ class cryptoutils:
     }
 
     @staticmethod
-    def list_algorithms():
-        return [_ for _ in cryptoutils.algorithms]
-
-    @staticmethod
     def hash(password):
-        return cryptoutils.pwd_context.hash(password)
+        return CryptoUtils.pwd_context.hash(password)
 
     @staticmethod
     def check_hash(password, hashed):
-        return cryptoutils.pwd_context.verify(password, hashed)
+        return CryptoUtils.pwd_context.verify(password, hashed)
 
     @staticmethod
     def make_key(password, algorithm, salt):
-        if not algorithm in cryptoutils.algorithms:
+        if algorithm not in CryptoUtils.algorithms:
             raise casket.invalid_algorithm("Algorithm %s is not supported." % (
                 algorithm))
-        else:
-            algorithm = cryptoutils.algorithms[algorithm]
 
         kdf = PBKDF2HMAC(
-            algorithm=algorithm,
+            algorithm=CryptoUtils.algorithms[algorithm],
             length=32,
             salt=salt,
             iterations=100000,
@@ -83,7 +77,7 @@ class cryptoutils:
 
     @staticmethod
     def encrypt_password(master_pswd, plain_pswd, salt=os.urandom(16), algorithm="sha256"):
-        key = cryptoutils.make_key(
+        key = CryptoUtils.make_key(
             master_pswd.encode("utf-8"), algorithm, salt)
         cipher_suite = Fernet(key)
         cipher_text = cipher_suite.encrypt(plain_pswd.encode("utf-8"))
@@ -94,7 +88,7 @@ class cryptoutils:
     @staticmethod
     def decrypt_password(master_pswd, enc_pswd, algorithm="sha256"):
         salt = base64.b64decode(enc_pswd[:24].encode("utf-8"))
-        key = cryptoutils.make_key(
+        key = CryptoUtils.make_key(
             master_pswd.encode("utf-8"), algorithm, salt)
         cipher_suite = Fernet(key)
         plain_text = cipher_suite.decrypt(enc_pswd[24:].encode("utf-8"))

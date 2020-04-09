@@ -20,11 +20,10 @@ database.py
 Local interface to the database. Lot of query over here.
 """
 
-import casket
 import sqlite3
 
 
-class dbutils:
+class DbUtils:
 
     def __init__(self, path):
         self.path = path
@@ -34,7 +33,7 @@ class dbutils:
     def __repr__(self):
         return 'sqlite db %s' % (self.path)
 
-    def query(self, query, void=False):
+    def query(self, query):
         self._cursor.execute(query)
         self.save()
         return self._cursor.fetchall()
@@ -43,18 +42,18 @@ class dbutils:
         self._database.commit()
 
     def add_session(self, session):
-        q = """INSERT INTO main.sessions
+        query = """INSERT INTO main.sessions
             (%s) VALUES
-            (\'%s\', \'%s\');""" % (
-            ','.join(["username", "email"]), session.username, session.email)
+            (\'%s\', \'%s\', \'%s\');""" % (
+            ','.join(["username", "email", "algorithm"]), session.username, session.email, session.algorithm)
 
-        self.query(q)
+        self.query(query)
 
     def select_all(self, table):
         return self.query("SELECT * FROM %s" % (table))
 
     def add_account(self, account, algorithm, session):
-        q = """INSERT INTO main.accounts
+        query = """INSERT INTO main.accounts
         (%s) VALUES
         (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\');""" % (
             ','.join(["name", "password", "email",
@@ -63,28 +62,28 @@ class dbutils:
             account.attributes, algorithm, session.username
         )
 
-        self.query(q)
+        self.query(query)
 
     def select_accounts(self, session):
-        q = "SELECT * FROM accounts WHERE id_session=\'%s\';" % (
+        query = "SELECT * FROM accounts WHERE id_session=\'%s\';" % (
             session.username
         )
 
-        return self.query(q)
+        return self.query(query)
 
     def remove_account(self, account, session):
-        q = """DELETE FROM accounts
+        query = """DELETE FROM accounts
             WHERE id_session = \'%s\' AND name = \'%s\';""" % (
             session.username, account
         )
 
-        self.query(q)
+        self.query(query)
 
     def select_sessions_name(self):
         return self.query("SELECT username FROM sessions;")
 
     def edit_account(self, session, account_name, column, value):
-        q = """UPDATE accounts SET %s = \'%s\' WHERE name = \'%s\' AND id_session = \'%s\';""" % (
+        query = """UPDATE accounts SET %s = \'%s\' WHERE name = \'%s\' AND id_session = \'%s\';""" % (
             column, value, account_name, session
         )
-        self.query(q)
+        self.query(query)

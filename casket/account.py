@@ -21,7 +21,7 @@ Mockup class that represent the casket's accounts.
 """
 
 
-class account:
+class Account:
 
     name = ''
     email = ''
@@ -30,27 +30,11 @@ class account:
     attributes = {}
 
     def __init__(self, name='default account', email="user@example.com",
-                 password="casket", attributes={}):
+                 password="casket"):
         self.name = name
         self.email = email
-        self.attributes = attributes
+        self.attributes = {}
         self.password = password
 
     def __repr__(self):
         return "%s account(%s)" % (self.name, self.email)
-
-    def set_password_safe(self, password):
-        """if not casket.password_validator.check_exist(password):
-            if casket.password_validator.check_string(password):
-                self.password = password
-            else:
-                raise not_valid_password_error
-        else:
-            if casket.settings.equal_password_allowed:
-                self.password = password
-            else:
-                raise not_valid_password_error"""
-        self.password = password
-
-    def set_password_any(self, password):
-        self.password = password

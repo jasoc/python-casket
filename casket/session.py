@@ -21,19 +21,22 @@ Main entry of casket module, it permit to manage all the casket's function,
 create new sessions and add new accounts.
 """
 
+# TODO: fix exceptions managing.
+
+
 import json
 import casket
 
 
-class session:
+class Session:
     """Main class of Casket.
     Args:
-        method:          The method the user want to access,
-                         'new' for new user, 'load' for load an already created session.
-        username:        The username of user's choise.
-        password_master: Password master of Casket.
-        email:           Default email user want to use for acount.
-        algorithm:       Default algorithm the user want to set.
+            method:          The method the user want to access,
+                             'new' for new user, 'load' for load an already created session.
+            username:        The username of user's choise.
+            password_master: Password master of Casket.
+            email:           Default email user want to use for acount.
+            algorithm:       Default algorithm the user want to set.
     """
 
     def __init__(self, method, username, password_master,
@@ -41,11 +44,8 @@ class session:
 
         self.username = username
         self.email = email
-        self.password_master = password_master
         self.algorithm = algorithm
         self.accounts = {}
-        self._decrypt = lambda s, a, m = self.password_master: casket.crypto.decrypt_password(
-            m, s, algorithm=a)
 
         self.home = casket.home()
         if not self.home.homefolder_exist():
@@ -53,18 +53,17 @@ class session:
 
         if method == "new":
             if not self.home.check_user_exist(username):
-                self.home.make_user_folder(self)
-                self.db = casket.database(self.home.DB_PATH)
-                self.db.add_session(self)
+                self.home.make_user_folder(self, password_master)
+                self.database = casket.database(self.home.db_path)
+                self.database.add_session(self)
             else:
                 raise casket.unable_to_open_session_exception(
-                    "*** Session username already exist. ***"
-                )
+                    "*** Session username already exist. ***")
 
         elif method == "load":
             if self.home.check_user_exist(username):
-                if self.check_password_master(self.password_master):
-                    self.db = casket.database(self.home.DB_PATH)
+                if self.check_password_master(password_master):
+                    self.database = casket.database(self.home.db_path)
                     self.sync_db()
                 else:
                     raise casket.wrong_password("Wrong password.")
@@ -73,50 +72,58 @@ class session:
         else:
             raise casket.invalid_parameter("Invalid method \'%s\'." % (method))
 
-    def new_account(self, account, algorithm):
+    def new_account(self, account, password_master, algorithm="default"):
         """Add a new account object to the database."""
+        if not self.check_password_master(password_master):
+            raise Exception("Wrong password.")
 
-        if self.account_exists(account.name):
+        if algorithm == "default":
+            algorithm = self.algorithm
+        if not self.account_exists(account.name):
+            temp_account = account
+            temp_account.password = casket.crypto.encrypt_password(
+                password_master, temp_account.password, algorithm=algorithm)
+
+            temp_account.email = casket.crypto.encrypt_password(
+                password_master, temp_account.email, algorithm=algorithm)
+
+            temp_account.attributes = casket.crypto.encrypt_password(
+                password_master, json.dumps(temp_account.attributes), algorithm=algorithm)
+
+            temp_account.id_session = self.username
+            self.database.add_account(temp_account, algorithm, self)
+            self.sync_db()
+        else:
             raise casket.account_name_already_exist("Account name \'%s\' already exist." % (
                 account.name))
 
-        else:
-            a = account
-            a.password = casket.crypto.encrypt_password(
-                self.password_master, a.password, algorithm=algorithm)
-
-            a.email = casket.crypto.encrypt_password(
-                self.password_master, a.email, algorithm=algorithm)
-
-            a.attributes = casket.crypto.encrypt_password(
-                self.password_master, json.dumps(a.attributes), algorithm=algorithm)
-
-            a.id_session = self.username
-            self.db.add_account(a, algorithm, self)
-            self.sync_db()
 
     def remove_account(self, account_name):
         """Remove given account from database."""
         if self.account_exists(account_name):
-            self.db.remove_account(account_name, self)
+            self.database.remove_account(account_name, self)
             self.sync_db()
         else:
             raise casket.account_doesnt_exist(
                 "Account \'%s\' doesen't exists." % (account_name))
 
-    def edit_account(self, account_name, column, new_value):
+    def edit_account(self, account_name, column, new_value, password_master):
         """Creates a model for a combobox showing factories.
         Args:
-            account_name (srt): Name of the account user want to edit.
-            column (str):       Attribute of account to edit.
-            new_value (str):    New value to set.
+                account_name (str): Name of the account user want to edit.
+                column (str):       Attribute of account to edit.
+                new_value (str):    New value to set.
         """
+        if not self.check_password_master(password_master):
+            raise Exception("Wrong password.")
+
         if column in ['name', 'password', 'email']:
             if self.account_exists(account_name):
                 if column != 'name':
                     new_value = casket.crypto.encrypt_password(
-                        self.password_master, new_value, algorithm=self.accounts[account_name].algorithm)
-                self.db.edit_account(
+                        password_master, new_value,
+                        algorithm=self.accounts[account_name].algorithm)
+                self.database.edit_account(
                     self.username, account_name, column, new_value)
                 self.sync_db()
             else:
@@ -124,21 +131,15 @@ class session:
         else:
             raise Exception("Invalid column.")
 
-    def decrypt_accounts(self):
-        """Return a dictionary with all the accounts with
-        a lambda for decrypt the credentials.
-        """
+    def get_decrypted_value(self, account, value, password_master):
+        """Return passed value of passed account decrypted."""
+        if not self.check_password_master(password_master):
+            raise Exception("Wrong password.")
+
         self.sync_db()
-
-        def dec_exp(str, alg):
-            try:
-                return self._decrypt(str, alg)
-            except Exception:
-                return str
-
-        return {_: {__: dec_exp(self.accounts[_].__dict__[__], self.accounts[_].__dict__["algorithm"])
-                    for __ in self.accounts[_].__dict__}
-                for _ in self.accounts}
+        raw_value = self.accounts[account].__dict__[value]
+        algorithm = self.accounts[account].__dict__['algorithm']
+        return casket.crypto.decrypt_password(password_master, raw_value, algorithm)
 
     def check_password_master(self, password):
         """Check if given password match the saved hash."""
@@ -148,12 +149,13 @@ class session:
 
     def sync_db(self):
         """Query the DB for syncronize the attribute with new values."""
-        res = self.db.select_accounts(self)
+        res = self.database.select_accounts(self)
 
-        def build_acc(a):
-            temp = casket.account(a[1], a[3], a[2], a[4])
-            temp.id_session = a[6]
-            temp.algorithm = a[5]
+        def build_acc(account):
+            temp = casket.Account(account[1], account[3], account[2])
+            temp.attributes = account[4]
+            temp.id_session = account[6]
+            temp.algorithm = account[5]
             return temp
 
         self.accounts = {_[1]: build_acc(_) for _ in res}
@@ -161,4 +163,4 @@ class session:
     def account_exists(self, account_name):
         """Check if geven account exists."""
         self.sync_db()
-        return account_name in [_ for _ in self.accounts]
+        return account_name in self.accounts

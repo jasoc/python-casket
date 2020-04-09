@@ -15,6 +15,9 @@
 # License along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 
+# TODO: fix naming style of exception classes and change it in all other files.
+
+
 class unable_to_open_session_exception(Exception):
     """Exception raised when it is impossible to open a session."""
     pass
