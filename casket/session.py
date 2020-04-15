@@ -23,7 +23,7 @@ create new sessions and add new accounts.
 
 # TODO: fix exceptions managing.
 
-
+import csv
 import json
 import casket
 
@@ -47,23 +47,22 @@ class Session:
         self.algorithm = algorithm
         self.accounts = {}
 
-        self.home = casket.home()
-        if not self.home.homefolder_exist():
-            self.home.make_folders()
+        if not casket.home.homefolder_exist():
+            casket.home.make_folders()
 
         if method == "new":
-            if not self.home.check_user_exist(username):
-                self.home.make_user_folder(self, password_master)
-                self.database = casket.database(self.home.db_path)
+            if not casket.home.check_user_exist(username):
+                casket.home.make_user_folder(self, password_master)
+                self.database = casket.database(casket.home.db_path)
                 self.database.add_session(self)
             else:
                 raise casket.unable_to_open_session_exception(
                     "*** Session username already exist. ***")
 
         elif method == "load":
-            if self.home.check_user_exist(username):
+            if casket.home.check_user_exist(username):
                 if self.check_password_master(password_master):
-                    self.database = casket.database(self.home.db_path)
+                    self.database = casket.database(casket.home.db_path)
                     self.sync_db()
                 else:
                     raise casket.wrong_password("Wrong password.")
@@ -144,7 +143,7 @@ class Session:
     def check_password_master(self, password):
         """Check if given password match the saved hash."""
         return casket.crypto.check_hash(
-            password, self.home.master_hash(
+            password, casket.home.master_hash(
                 self.username))
 
     def sync_db(self):
@@ -164,3 +163,27 @@ class Session:
         """Check if geven account exists."""
         self.sync_db()
         return account_name in self.accounts
+
+    def export(self, path, decrypted=True, filetype="csv", password_master="", delimiter=","):
+
+        if decrypted:
+            if password_master == "" and not self.check_password_master(password_master):
+                raise Exception()
+            with open('%s/casket.csv' % (path), mode='w') as casket_csv:
+                writer = csv.writer(casket_csv, delimiter=delimiter, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                for account in self.accounts:
+                    arr = []
+                    for value in self.accounts[account].__dict__:
+                        if value in ['password', 'email', 'attributes']:
+                            new_value = casket.crypto.decrypt_password(password_master,
+                                self.accounts[account].__dict__[value],
+                                self.accounts[account].__dict__["algorithm"])
+                        else:
+                            new_value = self.accounts[account].__dict__[value]
+                        arr.append(new_value)
+                    writer.writerow(arr)
+        else:
+            with open('%s/casket.csv' % (path), mode='w') as casket_csv:
+                writer = csv.writer(casket_csv, delimiter=delimiter, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                for account in self.accounts:
+                    writer.writerow([self.accounts[account].__dict__[_] for _ in self.accounts[account].__dict__])

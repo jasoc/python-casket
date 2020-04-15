@@ -23,18 +23,13 @@ Mockup class that represent the casket's accounts.
 
 class Account:
 
-    name = ''
-    email = ''
-    id_session = ''
-    password = ''
-    attributes = {}
-
     def __init__(self, name='default account', email="user@example.com",
-                 password="casket"):
+                 password="casket", attributes={}):
         self.name = name
         self.email = email
-        self.attributes = {}
+        self.attributes = attributes
         self.password = password
+        self.attributes = attributes
 
     def __repr__(self):
         return "%s account(%s)" % (self.name, self.email)

@@ -25,7 +25,6 @@ Static class for manage the casket's folder in home dir.
 
 import os
 import sqlite3
-import datetime
 import pickle
 import json
 from pathlib import Path
@@ -35,78 +34,55 @@ import casket
 
 class HomeFolder:
 
-    def __init__(self, folder_name='casket'):
-        self.home_path = '%s/%s' % (str(Path.home()), folder_name)
-        self.subdirs = [
-            'db',
-            'private',
-            'sessions'
-        ]
-        self.db_path = '%s/%s/casket.db' % (self.home_path, self.subdirs[0])
-        self.subfolders = ["%s/%s/" % (str(Path.home()) + '/casket', _)
-                           for _ in self.subdirs]
+    folder_name = "casket"
+    home_path = '%s/%s' % (str(Path.home()), folder_name)
+    subdirs = [
+        'hashes',
+    ]
+    db_path = '%s/casket.db' % (home_path)
+    subfolders = ["%s/%s/" % (str(Path.home()) + '/casket', _)
+                  for _ in subdirs]
 
-    def master_hash_path(self, username):
-        return self.subfolders[1] + username
+    @staticmethod
+    def master_hash_path(username):
+        return HomeFolder.subfolders[0] + username
 
-    def user_config_path(self, username):
-        return '/'.join([self.subfolders[2], username, 'config.json'])
-
-    def user_config(self, username):
+    @staticmethod
+    def master_hash(username):
         try:
-            with open(self.user_config_path(username), 'r') as outfile:
-                return json.load(outfile)
-        except Exception as exception:
-            raise exception
-
-    def master_hash(self, username):
-        try:
-            with open(self.master_hash_path(username), 'rb') as filehandler:
+            with open(HomeFolder.master_hash_path(username), 'rb') as filehandler:
                 return pickle.load(filehandler)
         except Exception as exception:
             raise exception
 
-    def make_folders(self):
-        if not os.path.isdir(self.home_path):
-            os.mkdir(self.home_path)
+    @staticmethod
+    def make_folders():
+        if not os.path.isdir(HomeFolder.home_path):
+            os.mkdir(HomeFolder.home_path)
 
-            for _ in self.subfolders:
+            for _ in HomeFolder.subfolders:
                 os.mkdir(_)
 
-            conn = sqlite3.connect(self.db_path)
+            conn = sqlite3.connect(HomeFolder.db_path)
             os.system('sqlite3 %s < casket/data/sql/structure.sql' %
-                      (self.db_path))
+                      (HomeFolder.db_path))
         else:
             raise Exception()
 
-    def check_user_exist(self, user):
-        return os.path.isdir("%s/%s" % (self.subfolders[2], user))
+    @staticmethod
+    def check_user_exist(user):
+        return os.path.isfile("%s/%s" % (HomeFolder.subfolders[0], user))
 
-    def homefolder_exist(self):
-        return os.path.isdir(self.home_path)
+    @staticmethod
+    def homefolder_exist():
+        return os.path.isdir(HomeFolder.home_path)
 
-    def make_user_folder(self, session, password_master):
-        folder = self.subfolders[2] + "/" + session.username
+    @staticmethod
+    def make_user_folder(session, password_master):
+        if not HomeFolder.check_user_exist(session.username):
 
-        if os.path.isdir(self.home_path):
-            if not os.path.isdir(folder):
-                os.mkdir(folder)
-
-                data = {
-                    "first_start": "none",
-                    "username": session.username,
-                    "email": session.email,
-                    "date_creation": str(datetime.datetime.now()),
-                    "default_algorithm": session.algorithm
-                }
-
-                with open(self.user_config_path(session.username), 'w+') as filehandler:
-                    json.dump(data, filehandler)
-
-                with open(self.master_hash_path(session.username), 'wb') as filehandler:
-                    pickle.dump(casket.crypto.hash(
-                        password_master), filehandler)
-            else:
-                raise Exception()
+            with open(HomeFolder.master_hash_path(session.username), 'wb') as filehandler:
+                pickle.dump(casket.crypto.hash(
+                    password_master), filehandler)
         else:
             raise Exception()
