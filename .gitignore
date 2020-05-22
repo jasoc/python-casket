@@ -1,8 +1,8 @@
-*.psd
 __pycache__
-try.py
-*.egg-info
 dist
 build
 .vscode
+try.py
+*.psd
+*.egg-info
 *.csv

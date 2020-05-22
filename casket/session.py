@@ -39,30 +39,27 @@ class Session:
             algorithm:       Default algorithm the user want to set.
     """
 
-    def __init__(self, method, username, password_master,
-                 email="user@example.com", algorithm="sha256"):
+    def __init__(self, workspace, method, username,
+                 password_master, algorithm="sha256"):
 
         self.username = username
-        self.email = email
         self.algorithm = algorithm
+        self.workspace = workspace
         self.accounts = {}
 
-        if not casket.home.homefolder_exist():
-            casket.home.make_folders()
-
         if method == "new":
-            if not casket.home.check_user_exist(username):
-                casket.home.make_user_folder(self, password_master)
-                self.database = casket.database(casket.home.db_path)
+            if not self.workspace.check_user_exist(username):
+                self.workspace.make_user_folder(self, password_master)
+                self.database = casket.database(self.workspace.db_path)
                 self.database.add_session(self)
             else:
                 raise casket.unable_to_open_session_exception(
-                    "*** Session username already exist. ***")
+                    "Session username already exist.")
 
         elif method == "load":
-            if casket.home.check_user_exist(username):
+            if self.workspace.check_user_exist(username):
                 if self.check_password_master(password_master):
-                    self.database = casket.database(casket.home.db_path)
+                    self.database = casket.database(self.workspace.db_path)
                     self.sync_db()
                 else:
                     raise casket.wrong_password("Wrong password.")
@@ -80,11 +77,9 @@ class Session:
             algorithm = self.algorithm
         if not self.account_exists(account.name):
             temp_account = account
+
             temp_account.password = casket.crypto.encrypt_password(
                 password_master, temp_account.password, algorithm=algorithm)
-
-            temp_account.email = casket.crypto.encrypt_password(
-                password_master, temp_account.email, algorithm=algorithm)
 
             temp_account.attributes = casket.crypto.encrypt_password(
                 password_master, json.dumps(temp_account.attributes), algorithm=algorithm)
@@ -95,7 +90,6 @@ class Session:
         else:
             raise casket.account_name_already_exist("Account name \'%s\' already exist." % (
                 account.name))
-
 
     def remove_account(self, account_name):
         """Remove given account from database."""
@@ -116,9 +110,9 @@ class Session:
         if not self.check_password_master(password_master):
             raise Exception("Wrong password.")
 
-        if column in ['name', 'password', 'email']:
+        if column in ['name', 'password', 'attributes']:
             if self.account_exists(account_name):
-                if column != 'name':
+                if column != "name":
                     new_value = casket.crypto.encrypt_password(
                         password_master, new_value,
                         algorithm=self.accounts[account_name].algorithm)
@@ -136,14 +130,18 @@ class Session:
             raise Exception("Wrong password.")
 
         self.sync_db()
-        raw_value = self.accounts[account].__dict__[value]
-        algorithm = self.accounts[account].__dict__['algorithm']
-        return casket.crypto.decrypt_password(password_master, raw_value, algorithm)
+
+        if value != "name":
+            raw_value = self.accounts[account].__dict__[value]
+            algorithm = self.accounts[account].__dict__['algorithm']
+            return casket.crypto.decrypt_password(password_master, raw_value, algorithm)
+        else:
+            return account
 
     def check_password_master(self, password):
         """Check if given password match the saved hash."""
         return casket.crypto.check_hash(
-            password, casket.home.master_hash(
+            password, self.workspace.master_hash(
                 self.username))
 
     def sync_db(self):
@@ -151,10 +149,9 @@ class Session:
         res = self.database.select_accounts(self)
 
         def build_acc(account):
-            temp = casket.Account(account[1], account[3], account[2])
-            temp.attributes = account[4]
-            temp.id_session = account[6]
-            temp.algorithm = account[5]
+            temp = casket.Account(account[1], account[2], account[3])
+            temp.id_session = account[5]
+            temp.algorithm = account[4]
             return temp
 
         self.accounts = {_[1]: build_acc(_) for _ in res}
@@ -163,6 +160,9 @@ class Session:
         """Check if geven account exists."""
         self.sync_db()
         return account_name in self.accounts
+
+    def default_algorithm(self):
+        return self.database.get_default_algorithm(self.username)[0]
 
     def export(self, path, decrypted=True, filetype="csv", password_master="", delimiter=","):
 
@@ -174,7 +174,7 @@ class Session:
                 for account in self.accounts:
                     arr = []
                     for value in self.accounts[account].__dict__:
-                        if value in ['password', 'email', 'attributes']:
+                        if value in ['name', 'password', 'attributes']:
                             new_value = casket.crypto.decrypt_password(password_master,
                                 self.accounts[account].__dict__[value],
                                 self.accounts[account].__dict__["algorithm"])

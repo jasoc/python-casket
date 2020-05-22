@@ -17,7 +17,7 @@
 from logzero import logger
 
 from .cryptography import CryptoUtils as crypto
-from .homefolder import HomeFolder as home
+from .workspace import WorkSpace
 from .database import DbUtils as database
 from .session import Session
 from .account import Account

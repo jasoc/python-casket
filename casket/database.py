@@ -44,8 +44,8 @@ class DbUtils:
     def add_session(self, session):
         query = """INSERT INTO main.sessions
             (%s) VALUES
-            (\'%s\', \'%s\', \'%s\');""" % (
-            ','.join(["username", "email", "algorithm"]), session.username, session.email, session.algorithm)
+            (\'%s\', \'%s\');""" % (
+            ','.join(["username", "algorithm"]), session.username, session.algorithm)
 
         self.query(query)
 
@@ -55,10 +55,10 @@ class DbUtils:
     def add_account(self, account, algorithm, session):
         query = """INSERT INTO main.accounts
         (%s) VALUES
-        (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\');""" % (
-            ','.join(["name", "password", "email",
-                      "other_json", "algorithm", "id_session"]),
-            account.name, account.password, account.email,
+        (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\');""" % (
+            ','.join(["name", "password",
+                      "attributes", "algorithm", "id_session"]),
+            account.name, account.password,
             account.attributes, algorithm, session.username
         )
 
@@ -87,3 +87,15 @@ class DbUtils:
             column, value, account_name, session
         )
         self.query(query)
+  
+    def get_default_algorithm(self, session):
+        query = "SELECT algorithm FROM session WHERE username = \'%s\';" % (
+            session
+        )
+        return self.query(query)
+    
+    def get_default_email(self, session):
+        query = "SELECT email FROM session WHERE username = \'%s\';" % (
+            session
+        )
+        return self.query(query)

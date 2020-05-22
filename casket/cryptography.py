@@ -94,3 +94,7 @@ class CryptoUtils:
         plain_text = cipher_suite.decrypt(enc_pswd[24:].encode("utf-8"))
         plain_text_utf8 = plain_text.decode("utf-8")
         return plain_text_utf8
+
+    @staticmethod
+    def get_salt(encrypted_string):
+        return base64.b64decode(encrypted_string[:24].encode("utf-8"))

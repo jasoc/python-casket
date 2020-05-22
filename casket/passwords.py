@@ -71,7 +71,7 @@ def verify_security_password(password, security_grade=4):
                                - 0: Check if contain special characters.
     Returns: (bool)
     """
-    if not password.isistance('string'):
+    if not isinstance(password, str):
         raise Exception()
 
     if security_grade not in [0, 1, 2, 3, 4]:
@@ -89,6 +89,25 @@ def verify_security_password(password, security_grade=4):
             flag = False
 
     return flag
+
+
+def security_grade(password):
+    if not isinstance(password, str):
+        raise Exception()
+
+    checkers_arr = [
+        has_minimum_length,
+        is_alphanumeric,
+        has_upper_and_lower,
+        has_special_characters]
+
+    cnt = 0
+    for _ in checkers_arr:
+        if _(password):
+            cnt += 1
+        else:
+            break
+    return cnt
 
 
 def generate_password(length=MINIMUM_LENGTH*2, special_characters=True,
@@ -113,7 +132,7 @@ def generate_password(length=MINIMUM_LENGTH*2, special_characters=True,
             rand = random.randint(0, len(value))
             value.pop(i)
             value.insert(rand, j)
-        return ''.join(string)
+        return ''.join(value)
 
     arr_chars = []
     cnt = 0
