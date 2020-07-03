@@ -138,6 +138,19 @@ class Session:
         else:
             return account
 
+    def get_decrypted_account_object(self, account_name, password_master):
+        account = casket.Account()
+
+        account.name = account_name
+        account.password = casket.crypto.decrypt_password(password_master,
+            self.accounts[account_name].__dict__['password'], self.accounts[account_name].__dict__['algorithm'])
+        attributes = casket.crypto.decrypt_password(password_master,
+            self.accounts[account_name].__dict__['attributes'], self.accounts[account_name].__dict__['algorithm'])
+        account.attributes = json.loads(attributes)
+        account.algorithm = self.accounts[account_name].__dict__['algorithm']
+
+        return account
+
     def check_password_master(self, password):
         """Check if given password match the saved hash."""
         return casket.crypto.check_hash(

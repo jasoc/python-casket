@@ -41,9 +41,9 @@ class WorkSpace:
                 self.home_path = 'C://casket'
         else:
             if path.endswith('/') or path.endswith('\\'):
-                self.home_path = casket_path[:-1]
+                self.home_path = path[:-1]
             else:
-                self.home_path = casket_path
+                self.home_path = path
 
 
         self.subdirs = [
@@ -54,8 +54,7 @@ class WorkSpace:
         self.subfolders = ["%s/%s/" % (self.home_path, _)
                       for _ in self.subdirs]
 
-        if not self.self_exist():
-            self.make_folder()
+        self.make_folder()
 
     def master_hash_path(self, username):
         return self.subfolders[0] + username
@@ -75,14 +74,13 @@ class WorkSpace:
         if not os.path.isdir(self.home_path):
             os.mkdir(self.home_path)
 
-            for _ in self.subfolders:
+        for _ in self.subfolders:
+            if not os.path.isdir(_):
                 os.mkdir(_)
 
-            conn = sqlite3.connect(self.db_path)
-            os.system('sqlite3 %s < casket/data/sql/structure.sql' %
-                      (self.db_path))
-        else:
-            raise Exception()
+        conn = sqlite3.connect(self.db_path)
+        os.system('sqlite3 %s < casket/data/sql/structure.sql' %
+                    (self.db_path))
 
     def check_user_exist(self, user):
         return os.path.isfile("%s/%s" % (self.subfolders[0], user))

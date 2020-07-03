@@ -5,12 +5,17 @@ with open("README.md", 'r') as f:
 
 setup(
    name='casket',
-   version='0.1.beta1',
+   version='0.1.b1',
    license='GNU General Public License v3.0',
    description='A simple password manager written in Python',
    author='giuntello',
    author_email='giuntello@protonmail.com',
    packages=find_packages(),
-   install_requires=['setuptools', 'logzero', 'cryptography', 'passlib'],
+   install_requires=[
+       'setuptools',
+       'logzero',
+       'cryptography',
+       'passlib',
+    ],
    include_package_data=True
 )
